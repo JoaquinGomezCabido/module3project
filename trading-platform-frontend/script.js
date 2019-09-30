@@ -1,3 +1,24 @@
+// CONSTANTS
+
+const orderButton = document.querySelector("#order-button")
+
+let currentPrice = 100;
+let buyPrice;
+let sellPrice;
+
+let buyPricesList = []
+let sellPricesList = []
+
+const tradesLog = document.querySelector("#trades-log")
+const profitsContainer = document.querySelector("#profits-container")
+const liveProfitDisplay = document.querySelector("div#live-profit-display")
+const totalProfitDisplay = document.querySelector("div#total-profit-display")
+
+const startButton = document.querySelector("#start-button")
+// orderButton.addEventListener("click", startGame)
+
+let holdingStock = false
+
 // CHART
 
 let options = {
@@ -37,8 +58,12 @@ let options = {
         },
     },
     xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     },
+    yaxis: {
+        min: 0,
+        max: 200
+    }
 }
 
 let chart = new ApexCharts(
@@ -46,45 +71,14 @@ let chart = new ApexCharts(
     options
 );
 
-// CONSTANTS
-
-const orderButton = document.querySelector("#order-button")
-orderButton.addEventListener("click", handleOrder)
-
-let currentPrice;
-let buyPrice;
-let sellPrice;
-
-const tradesLog = document.querySelector("#trades-log")
-const liveGain = document.querySelector("#live-gain-container")
-
-const startButton = document.querySelector("#start-button")
-// orderButton.addEventListener("click", startGame)
-
-let holdingStock = false
-
-function handleOrder(){
-    let tradeLi = document.createElement("li")
-    tradeLi.innerText = `${orderButton.innerText} @ ${currentPrice}`
-    tradesLog.append(tradeLi)
-
-    orderButton.innerText == "BUY" ? orderButton.innerText = "SELL" : orderButton.innerText = "BUY"
-    holdingStock = !holdingStock
-    holdingStock ? buyPrice = currentPrice : sellPrice = currentPrice
-    console.log(buyPrice)
-    console.log(sellPrice)
-}
-
-let startData = [50, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
-
+let nullFill = [null, null, null, null, null, null, null, null]
+let startData = [100, null, null, null, ...nullFill, ...nullFill, ...nullFill, ...nullFill, ...nullFill, ...nullFill, ...nullFill]
 let count = 1
 
-updateLiveGain = () => {
-    liveGain.innerText = `${currentPrice - buyPrice}`
-}
+// GROWING CHART
 
 function addNextDatapoint() {
-    let change = Math.random() > 0.5 ? (Math.floor(Math.random() * 5) + 1  ) : (- Math.floor(Math.random() * 5)  )
+    let change = Math.random() > 0.5 ? (Math.floor(Math.random() * 10) + 1  ) : (- Math.floor(Math.random() * 10)  )
     currentPrice = startData[count-1] + change
     startData[count] = currentPrice
     // console.log(startData)
@@ -93,7 +87,7 @@ function addNextDatapoint() {
     }])
     // console.log("datapoint added")
     if (holdingStock) {
-        updateLiveGain()
+        updateLiveProfitDisplay()
     }
     
     count++
@@ -106,4 +100,44 @@ let graphTimer = setInterval(addNextDatapoint, 500)
 
 chart.render()
 graphTimer
+
+
+// HANDLE BUY AND SELL
+
+orderButton.addEventListener("click", handleOrder)
+
+function handleOrder() {
+    let tradeLi = document.createElement("li")
+    tradeLi.innerText = `${orderButton.innerText} @ ${currentPrice}`
+    tradesLog.append(tradeLi)
+
+    orderButton.innerText == "BUY" ? orderButton.innerText = "SELL" : orderButton.innerText = "BUY"
+    
+    holdingStock = !holdingStock
+    if (holdingStock) { // just bought
+        buyPrice = currentPrice
+        buyPricesList.push(buyPrice)
+    } else { // just sold
+        sellPrice = currentPrice
+        sellPricesList.push(sellPrice)
+        updateTotalProfitDisplay()
+        updateLiveProfitDisplay()
+    }
+    console.log(buyPrice)
+    console.log(sellPrice)
+}
+
+updateLiveProfitDisplay = () => {
+    if (holdingStock) {
+        liveProfitDisplay.innerText = `Live profit: $${currentPrice - buyPrice}`
+    } else {
+        liveProfitDisplay.innerText = `Live profit: no stock held`
+    }
+}
+
+updateTotalProfitDisplay = () => {
+    let totalBuys = buyPricesList.reduce((a, b) => a+b)
+    let totalSales = sellPricesList.reduce((a, b) => a+b)
+    totalProfitDisplay.innerText = `Total profit $${totalSales - totalBuys}`
+}
 
