@@ -1,0 +1,9 @@
+#trades-log-container {
+    float: right;
+    width: 20%
+}
+
+#chart-container {
+    float: left;
+    width: 70%;
+}

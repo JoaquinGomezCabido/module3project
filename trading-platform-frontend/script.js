@@ -1,3 +1,5 @@
+// CHART
+
 let options = {
     chart: {
         height: 600,
@@ -25,7 +27,7 @@ let options = {
         curve: 'straight'
     },
     title: {
-        text: 'Product Trends by Month',
+        text: 'Random Stock',
         align: 'left'
     },
     grid: {
@@ -44,47 +46,64 @@ let chart = new ApexCharts(
     options
 );
 
-chart.render()
+// CONSTANTS
 
-// window.setTimeout(function() {
-//     chart.updateSeries([{
-//         data: [10, 41, 35, 51, 49, 20]
-//     }])
-//     console.log("time's up")
-// }, 2000)
+const orderButton = document.querySelector("#order-button")
+orderButton.addEventListener("click", handleOrder)
+
+let currentPrice;
+let buyPrice;
+let sellPrice;
+
+const tradesLog = document.querySelector("#trades-log")
+const liveGain = document.querySelector("#live-gain-container")
+
+const startButton = document.querySelector("#start-button")
+// orderButton.addEventListener("click", startGame)
+
+let holdingStock = false
+
+function handleOrder(){
+    let tradeLi = document.createElement("li")
+    tradeLi.innerText = `${orderButton.innerText} @ ${currentPrice}`
+    tradesLog.append(tradeLi)
+
+    orderButton.innerText == "BUY" ? orderButton.innerText = "SELL" : orderButton.innerText = "BUY"
+    holdingStock = !holdingStock
+    holdingStock ? buyPrice = currentPrice : sellPrice = currentPrice
+    console.log(buyPrice)
+    console.log(sellPrice)
+}
 
 let startData = [20, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 
-// function incrementData() { 
-//     startData.forEach(dataPoint => {
-//         window.setTimeout(function(dataPoint) {
-//             dataPoint = 50
-//             chart.updateSeries([{
-//                 data: startData
-//             }])
-//         }, 1000)
-//     });
-// }
-
-// incrementData()
-
 let count = 1
+
+updateLiveGain = () => {
+    liveGain.innerText = `${currentPrice - buyPrice}`
+}
 
 function addNextDatapoint() {
     let change = Math.random() > 0.5 ? (Math.floor(Math.random() * 5) + 1  ) : (- Math.floor(Math.random() * 5)  )
-    startData[count] = startData[count-1] + change
-    console.log(startData)
+    currentPrice = startData[count-1] + change
+    startData[count] = currentPrice
+    // console.log(startData)
     chart.updateSeries([{
         data: startData
     }])
-    console.log("datapoint added")
+    // console.log("datapoint added")
+    if (holdingStock) {
+        updateLiveGain()
+    }
     
     count++
     if (count == 60) { clearInterval(graphTimer)
-    console.log("timer stopped") }
+        // console.log("timer stopped") 
+    }
 }
 
-let graphTimer = setInterval(addNextDatapoint, 250)
+let graphTimer = setInterval(addNextDatapoint, 500)
 
+chart.render()
 graphTimer
 
