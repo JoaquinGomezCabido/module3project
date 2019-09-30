@@ -75,7 +75,7 @@ function handleOrder(){
     console.log(sellPrice)
 }
 
-let startData = [20, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+let startData = [50, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 
 let count = 1
 
