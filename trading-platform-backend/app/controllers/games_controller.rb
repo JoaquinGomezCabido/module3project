@@ -11,7 +11,7 @@ class GamesController < ApplicationController
 
   def update
     game = Game.find(params[:id])
-    game.update(score: game_params[:score])
+    game.update(game_params(:score, :user_profit, :market_profit))
     render json: game
   end
 
