@@ -1,8 +1,7 @@
 // API and requests
 
 function get(url) {
-    return fetch(url)
-    .then(response => response.json())
+	return fetch(url).then(response => response.json());
 }
 
 function post(url, data) {
@@ -13,11 +12,10 @@ function post(url, data) {
 			Accept: "application/json",
 		},
 		body: JSON.stringify(data),
-	})
-		.then(response => response.json())
+	}).then(response => response.json());
 }
 
-const API = {get, post };
+const API = { get, post };
 
 let practiceUserData = { user: { username: "olib" } };
 let practiceGameData = {
@@ -39,66 +37,193 @@ const GAMES_URL = "http://localhost:3000/games/";
 const TRADES_URL = "http://localhost:3000/trades/";
 
 const h1 = document.querySelector("h1");
-const h2 = document.querySelector("h2");
-const newGameForm = document.querySelector("#start-game");
-const leaderboard = document.querySelector("#leaderboard");
 const tableBody = document.querySelector("tbody");
 const chartContainer = document.querySelector("#chart-container");
 const tradesLogContainer = document.querySelector("#trades-log-container");
+const availableDates = [
+	"January 2020",
+	"February 2020",
+	"March 2020",
+	"April 2020",
+	"May 2020",
+	"June 2020",
+	"July 2020",
+	"August 2020",
+	"September 2020",
+	"October 2020",
+	"November 2020",
+	"December 2020",
+	"January 2021",
+	"February 2021",
+	"March 2021",
+	"April 2021",
+	"May 2021",
+	"June 2021",
+	"July 2021",
+	"August 2021",
+	"September 2021",
+	"October 2021",
+	"November 2021",
+	"December 2021",
+	"January 2022",
+	"February 2022",
+	"March 2022",
+	"April 2022",
+	"May 2022",
+	"June 2022",
+	"July 2022",
+	"August 2022",
+	"September 2022",
+	"October 2022",
+	"November 2022",
+	"December 2022",
+	"January 2023",
+	"February 2023",
+	"March 2023",
+	"April 2023",
+	"May 2023",
+	"June 2023",
+	"July 2023",
+	"August 2023",
+	"September 2023",
+	"October 2023",
+	"November 2023",
+	"December 2023",
+	"January 2024",
+	"February 2024",
+	"March 2024",
+	"April 2024",
+	"May 2024",
+	"June 2024",
+	"July 2024",
+	"August 2024",
+	"September 2024",
+	"October 2024",
+	"November 2024",
+	"December 2024",
+];
 
-let activeUser = {}
-let activeGame = {}
+let activeUser = {};
+let activeGame = {};
 
 // CREATE NEW GAME
 
-newGameForm.addEventListener("submit", handleFormSubmission);
-const fillUpLeaderboardButton = document.querySelector("button#fill-leaderboard-button")
-fillUpLeaderboardButton.addEventListener("click", fillUpLeaderboard)
+function showHomeScreen() {
+	chartContainer.innerText = "";
+	tradesLogContainer.innerText = "";
+
+	let newGameForm = document.createElement("form");
+	newGameForm.id = "start-game";
+	newGameForm.addEventListener("submit", handleFormSubmission);
+
+	let usernameLabel = document.createElement("label");
+	usernameLabel.setAttribute("for", "username");
+	usernameLabel.innerText = "My name is ";
+
+	let usernameInput = document.createElement("input");
+	usernameInput.setAttribute("type", "text");
+	usernameInput.setAttribute("name", "username");
+	usernameInput.id = "username";
+
+	let companyLabel = document.createElement("label");
+	companyLabel.setAttribute("for", "company");
+	companyLabel.innerText = " and I want to trade on ";
+
+	let companyInput = document.createElement("input");
+	companyInput.setAttribute("type", "text");
+	companyInput.setAttribute("name", "company");
+	companyInput.id = "company";
+
+	let submitButton = document.createElement("button");
+	submitButton.setAttribute("type", "submit");
+	submitButton.id = "start-button";
+	submitButton.innerText = "Start Trading";
+
+	newGameForm.append(
+		usernameLabel,
+		usernameInput,
+		companyLabel,
+		companyInput,
+		submitButton,
+	);
+	chartContainer.appendChild(newGameForm);
+
+	let h2 = document.createElement("h2");
+	h2.innerText = "Leaderboard";
+
+	let leaderboardTable = document.createElement("table");
+	leaderboardTable.id = "leaderboard";
+	leaderboardTable.className = "table table-hover";
+
+	let tableHead = document.createElement("thead");
+	tableHead.className = "table-active";
+
+	let tableRow = document.createElement("tr");
+
+	let usernameColumn = document.createElement("th");
+	usernameColumn.setAttribute("scope", "col");
+	usernameColumn.innerText = "Username";
+
+	let scoreColumn = document.createElement("th");
+	scoreColumn.setAttribute("scope", "col");
+	scoreColumn.innerText = "Score";
+
+	tableRow.append(usernameColumn, scoreColumn);
+	tableHead.appendChild(tableRow);
+
+	let tableBody = document.createElement("tbody");
+
+	leaderboardTable.append(tableHead, tableBody);
+	tradesLogContainer.append(h2, leaderboardTable);
+
+	fillUpLeaderboard();
+}
 
 function fillUpLeaderboard() {
-    API.get(USERS_URL)
-    .then(response => {
-        let users = response
-        API.get(GAMES_URL)
-        .then(response => {
-            let games = response
-            let top10games = games.sort((g1, g2) => g2.score - g1.score).slice(0, 10)
-            
-            top10games.forEach(game => {
-                let tr = document.createElement("tr");
-                let usernameTd = document.createElement("td");
+	API.get(USERS_URL).then(response => {
+		let users = response;
+		API.get(GAMES_URL).then(response => {
+			let games = response;
+			let top10games = games.sort((g1, g2) => g2.score - g1.score).slice(0, 10);
 
-                let gameUser = users.find(user => user.id === game.user_id)
-                usernameTd.innerText = gameUser.username;
-                let scoreTd = document.createElement("td");
-                scoreTd.innerText = game.score;
-                tr.append(usernameTd, scoreTd);
-                tableBody.appendChild(tr);
-            })
-        })
-    })
+			top10games.forEach(game => {
+				let tr = document.createElement("tr");
+				let usernameTd = document.createElement("td");
+
+				let gameUser = users.find(user => user.id === game.user_id);
+				usernameTd.innerText = gameUser.username;
+				let scoreTd = document.createElement("td");
+				scoreTd.innerText = game.score;
+				tr.append(usernameTd, scoreTd);
+				document.querySelector("tbody").appendChild(tr);
+			});
+		});
+	});
 }
+
+showHomeScreen();
 
 function handleFormSubmission() {
 	event.preventDefault();
-    let username = event.target.username.value;
-    let company = event.target.company.value;
-    API.post(USERS_URL, {user: {username}})
-    .then(response => {
-        activeUser = response
-        API.post(GAMES_URL, {game: {user_id: activeUser.id, company}})
-        .then(response => {
-            activeGame = response
-        })
-    })
-	.then(createGame(username, company));
+	let username = event.target.username.value;
+	let company = event.target.company.value;
+	API.post(USERS_URL, { user: { username } })
+		.then(response => {
+			activeUser = response;
+			API.post(GAMES_URL, { game: { user_id: activeUser.id, company } }).then(
+				response => {
+					activeGame = response;
+				},
+			);
+		})
+		.then(createGame(username, company));
 }
 
 function createGame(username, company) {
 	h1.innerText = `${username} is now trading ${company}!`;
-	h2.innerText = "Trades Log";
-	newGameForm.remove();
-	leaderboard.remove();
+	document.querySelector("h2").innerText = "Trades Log";
+	document.querySelector("#start-game").remove();
+	document.querySelector("#leaderboard").remove();
 	displayBoard();
 	createTradesLog();
 
@@ -140,8 +265,10 @@ function playGame(username, company) {
 
 	let currentPrice = 100;
 	let startData = new Array(60).fill(100);
+	let currentDate = "January 2020";
 	let buyPrice;
 	let sellPrice;
+	let annotations = { points: [] };
 
 	let buyPricesList = [];
 	let sellPricesList = [];
@@ -192,85 +319,13 @@ function playGame(username, company) {
 			},
 		},
 		xaxis: {
-			categories: [
-				"January 2020",
-				"February 2020",
-				"March 2020",
-				"April 2020",
-				"May 2020",
-				"June 2020",
-				"July 2020",
-				"August 2020",
-				"September 2020",
-				"October 2020",
-				"November 2020",
-				"December 2020",
-				"January 2021",
-				"February 2021",
-				"March 2021",
-				"April 2021",
-				"May 2021",
-				"June 2021",
-				"July 2021",
-				"August 2021",
-				"September 2021",
-				"October 2021",
-				"November 2021",
-				"December 2021",
-				"January 2022",
-				"February 2022",
-				"March 2022",
-				"April 2022",
-				"May 2022",
-				"June 2022",
-				"July 2022",
-				"August 2022",
-				"September 2022",
-				"October 2022",
-				"November 2022",
-				"December 2022",
-				"January 2023",
-				"February 2023",
-				"March 2023",
-				"April 2023",
-				"May 2023",
-				"June 2023",
-				"July 2023",
-				"August 2023",
-				"September 2023",
-				"October 2023",
-				"November 2023",
-				"December 2023",
-				"January 2024",
-				"February 2024",
-				"March 2024",
-				"April 2024",
-				"May 2024",
-				"June 2024",
-				"July 2024",
-				"August 2024",
-				"September 2024",
-				"October 2024",
-				"November 2024",
-				"December 2024",
-				"January 2025",
-				"February 2025",
-				"March 2025",
-				"April 2025",
-				"May 2025",
-				"June 2025",
-				"July 2025",
-				"August 2025",
-				"September 2025",
-				"October 2025",
-				"November 2025",
-				"December 2025",
-			],
+			categories: availableDates,
 		},
 		yaxis: {
 			min: 0,
 			max: 200,
 		},
+		annotations: { points: [] },
 	};
 
 	let chart = new ApexCharts(document.querySelector("#chart"), options);
@@ -280,6 +335,7 @@ function playGame(username, company) {
 	// GROWING CHART
 
 	function addNextDatapoint() {
+		currentDate = availableDates[count];
 		let change =
 			Math.random() > 0.5
 				? Math.floor(Math.random() * 10) + 1
@@ -298,10 +354,20 @@ function playGame(username, company) {
 		count++;
 		if (count == 60) {
 			clearInterval(graphTimer);
+			if (holdingStock) {
+				handleOrder();
+			}
+
+			orderButton.remove();
+
+			setTimeout(function() {
+				alert("Some text summarising your results");
+				showHomeScreen();
+			}, 0);
 		}
 	}
 
-	let graphTimer = setInterval(addNextDatapoint, 1); // speed
+	let graphTimer = setInterval(addNextDatapoint, 500); // speed
 
 	chart.render();
 	graphTimer;
@@ -312,16 +378,14 @@ function playGame(username, company) {
 
 	function handleOrder() {
 		let tradeLi = document.createElement("li");
-		tradeLi.innerText = `${orderButton.innerText} @ ${currentPrice}`;
-        tradesLog.append(tradeLi);
-        
-        let order = orderButton.innerText
-        let price = currentPrice
-        // let date = currentDate
-        let game_id = activeGame.id
-        let tradeData = {trade: {order, price, game_id}} // + date
-        API.post(TRADES_URL, tradeData)
-        .then(console.log)
+		tradeLi.innerText = `${currentDate}: ${orderButton.innerText} @ ${currentPrice}`;
+		tradesLog.append(tradeLi);
+
+		let order = orderButton.innerText;
+		let price = currentPrice;
+		let game_id = activeGame.id;
+		let tradeData = { trade: { order, price, game_id } }; // + date
+		API.post(TRADES_URL, tradeData).then(console.log);
 
 		orderButton.innerText == "BUY"
 			? (orderButton.innerText = "SELL")

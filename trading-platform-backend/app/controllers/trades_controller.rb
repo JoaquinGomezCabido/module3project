@@ -5,7 +5,6 @@ class TradesController < ApplicationController
   end
 
   def create
-    byebug
     trade = Trade.create(trade_params)
     render json: trade
   end
