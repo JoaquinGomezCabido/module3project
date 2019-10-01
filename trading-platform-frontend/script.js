@@ -106,7 +106,7 @@ const availableDates = [
 let activeUser = {};
 let activeGame = {};
 
-let totalProfit = 0
+let totalProfit = 0;
 
 // CREATE NEW GAME
 
@@ -166,9 +166,9 @@ function showHomeScreen() {
 
 	let usernameColumn = document.createElement("th");
 	usernameColumn.setAttribute("scope", "col");
-    usernameColumn.innerText = "Username";
-    
-    let companyColumn = document.createElement("th");
+	usernameColumn.innerText = "Username";
+
+	let companyColumn = document.createElement("th");
 	companyColumn.setAttribute("scope", "col");
 	companyColumn.innerText = "Company";
 
@@ -373,22 +373,17 @@ function playGame(username, company) {
 				handleOrder();
 			}
 
-<<<<<<< HEAD
-            orderButton.remove();
-            
-            // submitFinalScore(calculateFinalScore());
-
-			setTimeout(function() {
-                alert(`You made a profit of ${calculateFinalScores().userProfit}\n
-                The market made a profit of ${calculateFinalScores().marketProfit}\n
-                Your final score is ${calculateFinalScores().finalScore}!`);
-=======
 			orderButton.remove();
 			document.querySelector("#current-price").remove();
 
+			// submitFinalScore(calculateFinalScore());
+
 			setTimeout(function() {
-				alert("");
->>>>>>> joaquin
+				alert(`You made a profit of ${calculateFinalScores().userProfit}\n
+                The market made a profit of ${
+									calculateFinalScores().marketProfit
+								}\n
+                Your final score is ${calculateFinalScores().finalScore}!`);
 				showHomeScreen();
 			}, 0);
 		}
@@ -404,20 +399,8 @@ function playGame(username, company) {
 	orderButton.addEventListener("click", handleOrder);
 
 	function handleOrder() {
-        // change to pessimistic rendering?
+		// change to pessimistic rendering?
 		let tradeLi = document.createElement("li");
-<<<<<<< HEAD
-		tradeLi.innerText = `${orderButton.innerText} @ ${currentPrice}`;
-        tradesLog.append(tradeLi);
-        
-        let order = orderButton.innerText
-        let price = currentPrice
-        // let date = currentDate
-        let game_id = activeGame.id
-        let tradeData = {trade: {order, price, game_id}} // + date
-        API.post(TRADES_URL, tradeData)
-        .then(console.log) // add to trades log
-=======
 		tradeLi.innerText = `${currentDate}: ${orderButton.innerText} @ ${currentPrice}`;
 		tradesLog.append(tradeLi);
 
@@ -446,7 +429,6 @@ function playGame(username, company) {
 				text: `${orderButton.innerText} @ ${currentPrice}`,
 			},
 		});
->>>>>>> joaquin
 
 		orderButton.innerText == "BUY"
 			? (orderButton.innerText = "SELL")
@@ -472,29 +454,29 @@ function playGame(username, company) {
 		} else {
 			liveProfitDisplay.innerText = `Live profit: no stock held`;
 		}
-    };
-    
-    updateTotalProfit = () => {
-        let totalBuys = buyPricesList.reduce((a, b) => a + b);
-        let totalSales = sellPricesList.reduce((a, b) => a + b);
-        totalProfit = totalSales - totalBuys
-        return totalProfit
-    }
+	};
+
+	updateTotalProfit = () => {
+		let totalBuys = buyPricesList.reduce((a, b) => a + b);
+		let totalSales = sellPricesList.reduce((a, b) => a + b);
+		totalProfit = totalSales - totalBuys;
+		return totalProfit;
+	};
 
 	updateTotalProfitDisplay = () => {
 		totalProfitDisplay.innerText = `Total profit $${updateTotalProfit()}`;
-    };
-    
-    calculateFinalScores = () => {
-        let finalPrice = currentPrice
-        let marketProfit = finalPrice - 100
-        let userProfit = updateTotalProfit()
-        let finalScore = userProfit - marketProfit
-        let finalScores = {userProfit, marketProfit, finalScore}
-        return finalScores
-    }
+	};
 
-    // submitFinalScore = score => {
+	calculateFinalScores = () => {
+		let finalPrice = currentPrice;
+		let marketProfit = finalPrice - 100;
+		let userProfit = updateTotalProfit();
+		let finalScore = userProfit - marketProfit;
+		let finalScores = { userProfit, marketProfit, finalScore };
+		return finalScores;
+	};
 
-    // }
+	// submitFinalScore = score => {
+
+	// }
 }
