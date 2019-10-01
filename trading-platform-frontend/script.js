@@ -106,6 +106,8 @@ const availableDates = [
 let activeUser = {};
 let activeGame = {};
 
+let totalProfit = 0
+
 // CREATE NEW GAME
 
 function showHomeScreen() {
@@ -162,13 +164,17 @@ function showHomeScreen() {
 
 	let usernameColumn = document.createElement("th");
 	usernameColumn.setAttribute("scope", "col");
-	usernameColumn.innerText = "Username";
+    usernameColumn.innerText = "Username";
+    
+    let companyColumn = document.createElement("th");
+	companyColumn.setAttribute("scope", "col");
+	companyColumn.innerText = "Company";
 
 	let scoreColumn = document.createElement("th");
 	scoreColumn.setAttribute("scope", "col");
 	scoreColumn.innerText = "Score";
 
-	tableRow.append(usernameColumn, scoreColumn);
+	tableRow.append(usernameColumn, companyColumn, scoreColumn);
 	tableHead.appendChild(tableRow);
 
 	let tableBody = document.createElement("tbody");
@@ -192,9 +198,11 @@ function fillUpLeaderboard() {
 
 				let gameUser = users.find(user => user.id === game.user_id);
 				usernameTd.innerText = gameUser.username;
+				let companyTd = document.createElement("td");
+				companyTd.innerText = game.company;
 				let scoreTd = document.createElement("td");
 				scoreTd.innerText = game.score;
-				tr.append(usernameTd, scoreTd);
+				tr.append(usernameTd, companyTd, scoreTd);
 				document.querySelector("tbody").appendChild(tr);
 			});
 		});
@@ -358,16 +366,20 @@ function playGame(username, company) {
 				handleOrder();
 			}
 
-			orderButton.remove();
+            orderButton.remove();
+            
+            // submitFinalScore(calculateFinalScore());
 
 			setTimeout(function() {
-				alert("Some text summarising your results");
+                alert(`You made a profit of ${calculateFinalScores().userProfit}\n
+                The market made a profit of ${calculateFinalScores().marketProfit}\n
+                Your final score is ${calculateFinalScores().finalScore}!`);
 				showHomeScreen();
 			}, 0);
 		}
 	}
 
-	let graphTimer = setInterval(addNextDatapoint, 500); // speed
+	let graphTimer = setInterval(addNextDatapoint, 20); // speed
 
 	chart.render();
 	graphTimer;
@@ -377,15 +389,18 @@ function playGame(username, company) {
 	orderButton.addEventListener("click", handleOrder);
 
 	function handleOrder() {
+        // change to pessimistic rendering?
 		let tradeLi = document.createElement("li");
-		tradeLi.innerText = `${currentDate}: ${orderButton.innerText} @ ${currentPrice}`;
-		tradesLog.append(tradeLi);
-
-		let order = orderButton.innerText;
-		let price = currentPrice;
-		let game_id = activeGame.id;
-		let tradeData = { trade: { order, price, game_id } }; // + date
-		API.post(TRADES_URL, tradeData).then(console.log);
+		tradeLi.innerText = `${orderButton.innerText} @ ${currentPrice}`;
+        tradesLog.append(tradeLi);
+        
+        let order = orderButton.innerText
+        let price = currentPrice
+        // let date = currentDate
+        let game_id = activeGame.id
+        let tradeData = {trade: {order, price, game_id}} // + date
+        API.post(TRADES_URL, tradeData)
+        .then(console.log) // add to trades log
 
 		orderButton.innerText == "BUY"
 			? (orderButton.innerText = "SELL")
@@ -411,11 +426,29 @@ function playGame(username, company) {
 		} else {
 			liveProfitDisplay.innerText = `Live profit: no stock held`;
 		}
-	};
+    };
+    
+    updateTotalProfit = () => {
+        let totalBuys = buyPricesList.reduce((a, b) => a + b);
+        let totalSales = sellPricesList.reduce((a, b) => a + b);
+        totalProfit = totalSales - totalBuys
+        return totalProfit
+    }
 
 	updateTotalProfitDisplay = () => {
-		let totalBuys = buyPricesList.reduce((a, b) => a + b);
-		let totalSales = sellPricesList.reduce((a, b) => a + b);
-		totalProfitDisplay.innerText = `Total profit $${totalSales - totalBuys}`;
-	};
+		totalProfitDisplay.innerText = `Total profit $${updateTotalProfit()}`;
+    };
+    
+    calculateFinalScores = () => {
+        let finalPrice = currentPrice
+        let marketProfit = finalPrice - 100
+        let userProfit = updateTotalProfit()
+        let finalScore = userProfit - marketProfit
+        let finalScores = {userProfit, marketProfit, finalScore}
+        return finalScores
+    }
+
+    // submitFinalScore = score => {
+
+    // }
 }
