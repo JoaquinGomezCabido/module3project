@@ -47,6 +47,9 @@ const USERS_URL = "http://localhost:3000/users/";
 const GAMES_URL = "http://localhost:3000/games/";
 const TRADES_URL = "http://localhost:3000/trades/";
 
+const home = document.querySelector("#home");
+home.addEventListener("click", showHomeScreen);
+
 const h1 = document.querySelector("h1");
 const tableBody = document.querySelector("tbody");
 const chartContainer = document.querySelector("#chart-container");
@@ -275,9 +278,11 @@ function createTradesLog() {
 
 	let liveProfilDisplay = document.createElement("div");
 	liveProfilDisplay.id = "live-profit-display";
+	liveProfilDisplay.innerText = "Live Profit: $0";
 
 	let totalProfitDisplay = document.createElement("div");
 	totalProfitDisplay.id = "total-profit-display";
+	totalProfitDisplay.innerText = "Total Profit: $0";
 
 	profitsContainer.append(liveProfilDisplay, totalProfitDisplay);
 	tradesLogContainer.append(tradesLogUl, profitsContainer);
@@ -362,6 +367,9 @@ function playGame(username, company) {
 	};
 
 	let chart = new ApexCharts(document.querySelector("#chart"), options);
+	setTimeout(function() {
+		alert("Get ready to start trading!!!!!!");
+	}, 0);
 
 	let count = 1;
 
@@ -397,17 +405,16 @@ function playGame(username, company) {
 
 			// submitFinalScore(calculateFinalScore());
 
-            orderButton.remove();
-            
-            let finalScores = calculateFinalScores()
+			orderButton.remove();
 
-            submitFinalScores(finalScores);
+			let finalScores = calculateFinalScores();
+
+			submitFinalScores(finalScores);
 
 			setTimeout(function() {
-                alert(`You made a profit of ${finalScores.user_profit}\n
+				alert(`You made a profit of ${finalScores.user_profit}\n
                 The market made a profit of ${finalScores.market_profit}\n
-                Your final score is ${finalScores.score}!`);
-				showHomeScreen();
+				Your final score is ${finalScores.score}!`);
 			}, 0);
 		}
 	}
@@ -480,26 +487,30 @@ function playGame(username, company) {
 	};
 
 	updateTotalProfit = () => {
-		let totalBuys = buyPricesList.reduce((a, b) => a + b);
-		let totalSales = sellPricesList.reduce((a, b) => a + b);
-		totalProfit = totalSales - totalBuys;
+		if (buyPricesList.length == 0) {
+			totalProfit = 0;
+		} else {
+			let totalBuys = buyPricesList.reduce((a, b) => a + b);
+			let totalSales = sellPricesList.reduce((a, b) => a + b);
+			totalProfit = totalSales - totalBuys;
+		}
 		return totalProfit;
 	};
 
 	updateTotalProfitDisplay = () => {
-		totalProfitDisplay.innerText = `Total profit $${updateTotalProfit()}`;
-    };
-    
-    calculateFinalScores = () => {
-        let finalPrice = currentPrice
-        let market_profit = finalPrice - 100
-        let user_profit = updateTotalProfit()
-        let score = user_profit - market_profit
-        let finalScores = {user_profit, market_profit, score}
-        return finalScores
-    }
+		totalProfitDisplay.innerText = `Total profit: $${updateTotalProfit()}`;
+	};
 
-    submitFinalScores = scores => {
-        API.patch(GAMES_URL+`${activeGame.id}`, {game: scores})
-    }
+	calculateFinalScores = () => {
+		let finalPrice = currentPrice;
+		let market_profit = finalPrice - 100;
+		let user_profit = updateTotalProfit();
+		let score = user_profit - market_profit;
+		let finalScores = { user_profit, market_profit, score };
+		return finalScores;
+	};
+
+	submitFinalScores = scores => {
+		API.patch(GAMES_URL + `${activeGame.id}`, { game: scores });
+	};
 }
