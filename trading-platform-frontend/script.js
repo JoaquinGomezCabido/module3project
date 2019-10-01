@@ -15,7 +15,18 @@ function post(url, data) {
 	}).then(response => response.json());
 }
 
-const API = { get, post };
+function patch(url, data) {
+	return fetch(url, {
+		method: "PATCH",
+		headers: {
+			"Content-Type": "application/json",
+			Accept: "application/json",
+		},
+		body: JSON.stringify(data),
+	}).then(response => response.json());
+}
+
+const API = { get, post, patch };
 
 let practiceUserData = { user: { username: "olib" } };
 let practiceGameData = {
@@ -378,12 +389,16 @@ function playGame(username, company) {
 
 			// submitFinalScore(calculateFinalScore());
 
+            orderButton.remove();
+            
+            let finalScores = calculateFinalScores()
+
+            submitFinalScores(finalScores);
+
 			setTimeout(function() {
-				alert(`You made a profit of ${calculateFinalScores().userProfit}\n
-                The market made a profit of ${
-									calculateFinalScores().marketProfit
-								}\n
-                Your final score is ${calculateFinalScores().finalScore}!`);
+                alert(`You made a profit of ${finalScores.user_profit}\n
+                The market made a profit of ${finalScores.market_profit}\n
+                Your final score is ${finalScores.score}!`);
 				showHomeScreen();
 			}, 0);
 		}
@@ -465,18 +480,18 @@ function playGame(username, company) {
 
 	updateTotalProfitDisplay = () => {
 		totalProfitDisplay.innerText = `Total profit $${updateTotalProfit()}`;
-	};
+    };
+    
+    calculateFinalScores = () => {
+        let finalPrice = currentPrice
+        let market_profit = finalPrice - 100
+        let user_profit = updateTotalProfit()
+        let score = user_profit - market_profit
+        let finalScores = {user_profit, market_profit, score}
+        return finalScores
+    }
 
-	calculateFinalScores = () => {
-		let finalPrice = currentPrice;
-		let marketProfit = finalPrice - 100;
-		let userProfit = updateTotalProfit();
-		let finalScore = userProfit - marketProfit;
-		let finalScores = { userProfit, marketProfit, finalScore };
-		return finalScores;
-	};
-
-	// submitFinalScore = score => {
-
-	// }
+    submitFinalScores = scores => {
+        API.patch(GAMES_URL+`${activeGame.id}`, {game: scores})
+    }
 }
