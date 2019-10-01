@@ -334,6 +334,14 @@ function playGame(username, company) {
 		},
 		xaxis: {
 			categories: availableDates,
+			labels: {
+				rotate: -90,
+				hideOverlappingLabels: true,
+				style: {
+					fontSize: "10px",
+				},
+			},
+			tickAmount: 30,
 		},
 		yaxis: {
 			min: 0,
@@ -389,7 +397,7 @@ function playGame(username, company) {
 		}
 	}
 
-	let graphTimer = setInterval(addNextDatapoint, 20); // speed
+	let graphTimer = setInterval(addNextDatapoint, 500); // speed
 
 	chart.render();
 	graphTimer;
