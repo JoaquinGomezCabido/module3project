@@ -12,10 +12,13 @@
 
 ActiveRecord::Schema.define(version: 2019_10_01_080824) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "games", force: :cascade do |t|
     t.string "company"
     t.float "score"
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.float "user_profit"
@@ -27,7 +30,7 @@ ActiveRecord::Schema.define(version: 2019_10_01_080824) do
     t.string "order"
     t.float "price"
     t.string "date"
-    t.integer "game_id", null: false
+    t.bigint "game_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["game_id"], name: "index_trades_on_game_id"
