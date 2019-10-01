@@ -1,4 +1,29 @@
+// API and requests
+
+function post(url, data) {
+    return fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+    // .then(response => response.json())
+    // .then(console.log)
+    // .catch(console.log("oh no"))
+}
+
 // CONSTANTS
+
+let practiceUserData = {username: "olib"}
+let practiceGameData = {game: {company: "Flatiron", score: 40, user_profit: 140, market_profit: 100}}
+let practiceTradeData = {trade: {order: "buy", price: 90}}
+let practiceTradeData2 = {trade: {order: "sell", price: 140}}
+
+const USERS_URL = "http://localhost:3000/users/"
+const GAMES_URL = "http://localhost:3000/games/"
+const TRADES_URL = "http://localhost:3000/trades/"
 
 const orderButton = document.querySelector("#order-button")
 
@@ -96,7 +121,7 @@ function addNextDatapoint() {
     }
 }
 
-let graphTimer = setInterval(addNextDatapoint, 500)
+let graphTimer = setInterval(addNextDatapoint, 1)
 
 chart.render()
 graphTimer
