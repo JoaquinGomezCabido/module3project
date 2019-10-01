@@ -114,6 +114,8 @@ function showHomeScreen() {
 	chartContainer.innerText = "";
 	tradesLogContainer.innerText = "";
 
+	h1.innerText = "Welcome to Fence Alley";
+
 	let newGameForm = document.createElement("form");
 	newGameForm.id = "start-game";
 	newGameForm.addEventListener("submit", handleFormSubmission);
@@ -242,11 +244,15 @@ function displayBoard() {
 	let chartDiv = document.createElement("div");
 	chartDiv.id = "chart";
 
+	let priceSpan = document.createElement("span");
+	priceSpan.id = "current-price";
+	priceSpan.innerText = 100;
+
 	let orderButton = document.createElement("button");
 	orderButton.id = "order-button";
 	orderButton.innerText = "BUY";
 
-	chartContainer.append(chartDiv, orderButton);
+	chartContainer.append(chartDiv, priceSpan, orderButton);
 }
 
 function createTradesLog() {
@@ -349,6 +355,7 @@ function playGame(username, company) {
 				? Math.floor(Math.random() * 10) + 1
 				: -Math.floor(Math.random() * 10);
 		currentPrice = startData[count - 1] + change;
+		document.querySelector("#current-price").innerText = `$${currentPrice} `;
 		startData[count] = currentPrice;
 		chart.updateSeries([
 			{
@@ -366,6 +373,7 @@ function playGame(username, company) {
 				handleOrder();
 			}
 
+<<<<<<< HEAD
             orderButton.remove();
             
             // submitFinalScore(calculateFinalScore());
@@ -374,6 +382,13 @@ function playGame(username, company) {
                 alert(`You made a profit of ${calculateFinalScores().userProfit}\n
                 The market made a profit of ${calculateFinalScores().marketProfit}\n
                 Your final score is ${calculateFinalScores().finalScore}!`);
+=======
+			orderButton.remove();
+			document.querySelector("#current-price").remove();
+
+			setTimeout(function() {
+				alert("");
+>>>>>>> joaquin
 				showHomeScreen();
 			}, 0);
 		}
@@ -391,6 +406,7 @@ function playGame(username, company) {
 	function handleOrder() {
         // change to pessimistic rendering?
 		let tradeLi = document.createElement("li");
+<<<<<<< HEAD
 		tradeLi.innerText = `${orderButton.innerText} @ ${currentPrice}`;
         tradesLog.append(tradeLi);
         
@@ -401,6 +417,36 @@ function playGame(username, company) {
         let tradeData = {trade: {order, price, game_id}} // + date
         API.post(TRADES_URL, tradeData)
         .then(console.log) // add to trades log
+=======
+		tradeLi.innerText = `${currentDate}: ${orderButton.innerText} @ ${currentPrice}`;
+		tradesLog.append(tradeLi);
+
+		let order = orderButton.innerText;
+		let price = currentPrice;
+		let game_id = activeGame.id;
+		let tradeData = { trade: { order, price, game_id } };
+		API.post(TRADES_URL, tradeData);
+
+		chart.addPointAnnotation({
+			x: count,
+			y: currentPrice,
+			marker: {
+				size: 6,
+				fillColor: "#fff",
+				strokeColor: "#2698FF",
+				radius: 2,
+			},
+			label: {
+				borderColor: "#2698FF",
+				offsetY: 0,
+				style: {
+					color: "#2698FF",
+				},
+
+				text: `${orderButton.innerText} @ ${currentPrice}`,
+			},
+		});
+>>>>>>> joaquin
 
 		orderButton.innerText == "BUY"
 			? (orderButton.innerText = "SELL")
