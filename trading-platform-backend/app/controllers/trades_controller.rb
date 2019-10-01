@@ -5,6 +5,7 @@ class TradesController < ApplicationController
   end
 
   def create
+    byebug
     trade = Trade.create(trade_params)
     render json: trade
   end
@@ -12,6 +13,6 @@ class TradesController < ApplicationController
   private
 
   def trade_params
-    params.require(:trade).permit(:price, :date, :type, :game_id)
+    params.require(:trade).permit(:order, :price, :date, :type, :game_id)
   end
 end

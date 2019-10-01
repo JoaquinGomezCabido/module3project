@@ -1,5 +1,10 @@
 // API and requests
 
+function get(url) {
+    return fetch(url)
+    .then(response => response.json())
+}
+
 function post(url, data) {
 	return fetch(url, {
 		method: "POST",
@@ -10,10 +15,9 @@ function post(url, data) {
 		body: JSON.stringify(data),
 	})
 		.then(response => response.json())
-		.then(console.log);
 }
 
-const API = { post };
+const API = {get, post };
 
 let practiceUserData = { user: { username: "olib" } };
 let practiceGameData = {
@@ -29,6 +33,7 @@ let practiceTradeData = { trade: { order: "buy", price: 90 } };
 let practiceTradeData2 = { trade: { order: "sell", price: 140 } };
 
 // CONSTANTS
+
 const USERS_URL = "http://localhost:3000/users/";
 const GAMES_URL = "http://localhost:3000/games/";
 const TRADES_URL = "http://localhost:3000/trades/";
@@ -41,26 +46,43 @@ const tableBody = document.querySelector("tbody");
 const chartContainer = document.querySelector("#chart-container");
 const tradesLogContainer = document.querySelector("#trades-log-container");
 
+let activeUser = {}
+let activeGame = {}
+
 // CREATE NEW GAME
 
 newGameForm.addEventListener("submit", handleFormSubmission);
+const fillUpLeaderboardButton = document.querySelector("button#fill-leaderboard-button")
+fillUpLeaderboardButton.addEventListener("click", fillUpLeaderboard)
 
 function fillUpLeaderboard() {
-	// API.getGames .then(response => forEach(game =>
-	// let tr = document.createElement("tr");
-	// let usernameTd = document.createElement("td");
-	// usernameTd.innerText = "";
-	// let scoreTd = document.createElement("td");
-	// scoreTd.innerText = "";
-	// tr.append(usernameTd, scoreTd);
-	// tableBody.appendChild(tr);
+    // let users = API.get(USERS_URL)
+    // .then ...
+    API.get(GAMES_URL)
+    .then(response => response.forEach(game => {
+        let tr = document.createElement("tr");
+        let usernameTd = document.createElement("td");
+        // usernameTd.innerText = game.user.username;
+        let scoreTd = document.createElement("td");
+        scoreTd.innerText = game.score;
+        tr.append(usernameTd, scoreTd);
+        tableBody.appendChild(tr);
+    }))
 }
 
 function handleFormSubmission() {
 	event.preventDefault();
-	let username = event.target.username.value;
-	let company = event.target.company.value;
-	createGame(username, company);
+    let username = event.target.username.value;
+    let company = event.target.company.value;
+    API.post(USERS_URL, {user: {username}})
+    .then(response => {
+        activeUser = response
+        API.post(GAMES_URL, {game: {user_id: activeUser.id, company}})
+        .then(response => {
+            activeGame = response
+        })
+    })
+	.then(createGame(username, company));
 }
 
 function createGame(username, company) {
@@ -270,7 +292,7 @@ function playGame(username, company) {
 		}
 	}
 
-	let graphTimer = setInterval(addNextDatapoint, 500);
+	let graphTimer = setInterval(addNextDatapoint, 1); // speed
 
 	chart.render();
 	graphTimer;
@@ -282,7 +304,15 @@ function playGame(username, company) {
 	function handleOrder() {
 		let tradeLi = document.createElement("li");
 		tradeLi.innerText = `${orderButton.innerText} @ ${currentPrice}`;
-		tradesLog.append(tradeLi);
+        tradesLog.append(tradeLi);
+        
+        let order = orderButton.innerText
+        let price = currentPrice
+        // let date = currentDate
+        let game_id = activeGame.id
+        let tradeData = {trade: {order, price, game_id}} // + date
+        API.post(TRADES_URL, tradeData)
+        .then(console.log)
 
 		orderButton.innerText == "BUY"
 			? (orderButton.innerText = "SELL")
