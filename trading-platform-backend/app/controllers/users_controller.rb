@@ -5,10 +5,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    # puts "reached"
-    byebug
     user = User.create(user_params)
-    # puts user
     render json: user
   end
 

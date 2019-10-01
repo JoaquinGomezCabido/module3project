@@ -5,7 +5,7 @@ class GamesController < ApplicationController
   end
 
   def create
-    game = Game.create(game_params[:company, :user_id])
+    game = Game.create(game_params(:company, :user_id, :score, :user_profit, :market_profit))
     render json: game
   end
 

@@ -5,19 +5,20 @@ function post(url, data) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            Accept: "application/json"
+            "Accept": "application/json"
         },
         body: JSON.stringify(data)
     })
-    // .then(response => response.json())
-    // .then(console.log)
-    // .catch(console.log("oh no"))
+    .then(response => response.json())
+    .then(console.log)
 }
+
+const API = {post}
 
 // CONSTANTS
 
-let practiceUserData = {username: "olib"}
-let practiceGameData = {game: {company: "Flatiron", score: 40, user_profit: 140, market_profit: 100}}
+let practiceUserData = {user: {username: "olib"}}
+let practiceGameData = {game: {user_id: 1, company: "Flatiron", score: 40, user_profit: 140, market_profit: 100}}
 let practiceTradeData = {trade: {order: "buy", price: 90}}
 let practiceTradeData2 = {trade: {order: "sell", price: 140}}
 
