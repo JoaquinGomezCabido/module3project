@@ -34,26 +34,85 @@ const GAMES_URL = "http://localhost:3000/games/";
 const TRADES_URL = "http://localhost:3000/trades/";
 
 const h1 = document.querySelector("h1");
-const h2 = document.querySelector("h2");
-const newGameForm = document.querySelector("#start-game");
-const leaderboard = document.querySelector("#leaderboard");
 const tableBody = document.querySelector("tbody");
 const chartContainer = document.querySelector("#chart-container");
 const tradesLogContainer = document.querySelector("#trades-log-container");
 
 // CREATE NEW GAME
 
-newGameForm.addEventListener("submit", handleFormSubmission);
+function showHomeScreen() {
+	chartContainer.innerText = "";
+	tradesLogContainer.innerText = "";
+
+	let newGameForm = document.createElement("form");
+	newGameForm.id = "start-game";
+	newGameForm.addEventListener("submit", handleFormSubmission);
+
+	let usernameLabel = document.createElement("label");
+	usernameLabel.setAttribute("for", "username");
+	usernameLabel.innerText = "My name is ";
+
+	let usernameInput = document.createElement("input");
+	usernameInput.setAttribute("type", "text");
+	usernameInput.setAttribute("name", "username");
+	usernameInput.id = "username";
+
+	let companyLabel = document.createElement("label");
+	companyLabel.setAttribute("for", "company");
+	companyLabel.innerText = " and I want to trade on ";
+
+	let companyInput = document.createElement("input");
+	companyInput.setAttribute("type", "text");
+	companyInput.setAttribute("name", "company");
+	companyInput.id = "company";
+
+	let submitButton = document.createElement("button");
+	submitButton.setAttribute("type", "submit");
+	submitButton.id = "start-button";
+	submitButton.innerText = "Start Trading";
+
+	newGameForm.append(
+		usernameLabel,
+		usernameInput,
+		companyLabel,
+		companyInput,
+		submitButton,
+	);
+	chartContainer.appendChild(newGameForm);
+
+	let h2 = document.createElement("h2");
+	h2.innerText = "Leaderboard";
+
+	let leaderboardTable = document.createElement("table");
+	leaderboardTable.id = "leaderboard";
+	leaderboardTable.className = "table table-hover";
+
+	let tableHead = document.createElement("thead");
+	tableHead.className = "table-active";
+
+	let tableRow = document.createElement("tr");
+
+	let usernameColumn = document.createElement("th");
+	usernameColumn.setAttribute("scope", "col");
+	usernameColumn.innerText = "Username";
+
+	let scoreColumn = document.createElement("th");
+	scoreColumn.setAttribute("scope", "col");
+	scoreColumn.innerText = "Score";
+
+	tableRow.append(usernameColumn, scoreColumn);
+	tableHead.appendChild(tableRow);
+
+	let tableBody = document.createElement("tbody");
+
+	leaderboardTable.append(tableHead, tableBody);
+	tradesLogContainer.append(h2, leaderboardTable);
+}
+
+showHomeScreen();
 
 function fillUpLeaderboard() {
-	// API.getGames .then(response => forEach(game =>
-	// let tr = document.createElement("tr");
-	// let usernameTd = document.createElement("td");
-	// usernameTd.innerText = "";
-	// let scoreTd = document.createElement("td");
-	// scoreTd.innerText = "";
-	// tr.append(usernameTd, scoreTd);
-	// tableBody.appendChild(tr);
+	//
 }
 
 function handleFormSubmission() {
@@ -65,9 +124,9 @@ function handleFormSubmission() {
 
 function createGame(username, company) {
 	h1.innerText = `${username} is now trading ${company}!`;
-	h2.innerText = "Trades Log";
-	newGameForm.remove();
-	leaderboard.remove();
+	document.querySelector("h2").innerText = "Trades Log";
+	document.querySelector("#start-game").remove();
+	document.querySelector("#leaderboard").remove();
 	displayBoard();
 	createTradesLog();
 
@@ -267,10 +326,20 @@ function playGame(username, company) {
 		count++;
 		if (count == 60) {
 			clearInterval(graphTimer);
+			if (holdingStock) {
+				handleOrder();
+			}
+
+			orderButton.remove();
+
+			setTimeout(function() {
+				alert("Some text summarising your results");
+				showHomeScreen();
+			}, 0);
 		}
 	}
 
-	let graphTimer = setInterval(addNextDatapoint, 500);
+	let graphTimer = setInterval(addNextDatapoint, 500); // speed
 
 	chart.render();
 	graphTimer;
