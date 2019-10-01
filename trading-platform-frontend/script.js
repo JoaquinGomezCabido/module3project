@@ -56,18 +56,27 @@ const fillUpLeaderboardButton = document.querySelector("button#fill-leaderboard-
 fillUpLeaderboardButton.addEventListener("click", fillUpLeaderboard)
 
 function fillUpLeaderboard() {
-    // let users = API.get(USERS_URL)
-    // .then ...
-    API.get(GAMES_URL)
-    .then(response => response.forEach(game => {
-        let tr = document.createElement("tr");
-        let usernameTd = document.createElement("td");
-        // usernameTd.innerText = game.user.username;
-        let scoreTd = document.createElement("td");
-        scoreTd.innerText = game.score;
-        tr.append(usernameTd, scoreTd);
-        tableBody.appendChild(tr);
-    }))
+    API.get(USERS_URL)
+    .then(response => {
+        let users = response
+        API.get(GAMES_URL)
+        .then(response => {
+            let games = response
+            let top10games = games.sort((g1, g2) => g2.score - g1.score).slice(0, 10)
+            
+            top10games.forEach(game => {
+                let tr = document.createElement("tr");
+                let usernameTd = document.createElement("td");
+
+                let gameUser = users.find(user => user.id === game.user_id)
+                usernameTd.innerText = gameUser.username;
+                let scoreTd = document.createElement("td");
+                scoreTd.innerText = game.score;
+                tr.append(usernameTd, scoreTd);
+                tableBody.appendChild(tr);
+            })
+        })
+    })
 }
 
 function handleFormSubmission() {
