@@ -16,6 +16,7 @@ input {
 }
 
 #trades-log-container {
+    margin: 0 5%;
     float: right;
     width: 20%;
     text-align: center;
@@ -35,8 +36,13 @@ form {
     text-align: center;
 }
 
-#trades-log-container {
-    margin: 2% 5%;
+#trades-log {
+    max-height: 60%;
+    overflow-y: auto;
+}
+
+li {
+    list-style-type: none;
 }
 
 #control-div {
