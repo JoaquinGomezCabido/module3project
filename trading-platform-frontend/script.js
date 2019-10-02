@@ -477,7 +477,7 @@ function playGame(company) {
 	}
 
 	function startGraphUpdates() {
-		graphTimer = setInterval(addNextDatapoint, 1); // speed
+		graphTimer = setInterval(addNextDatapoint, 500); // speed
 		graphTimer;
 	}
 
