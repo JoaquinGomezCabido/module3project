@@ -40,5 +40,6 @@ form {
 }
 
 #control-div {
-    text-align: center;
+    margin: 0 30%;
+    text-align: right;
 }

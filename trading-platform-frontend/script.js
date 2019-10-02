@@ -379,75 +379,113 @@ function playGame(company) {
 			min: 0,
 			max: 200,
 			forceNiceScale: true,
+			labels: {
+				formatter: function(value) {
+					return `$${value}`;
+				},
+			},
 		},
 		annotations: { points: [] },
 	};
 
 	let chart = new ApexCharts(document.querySelector("#chart"), options);
 	setTimeout(function() {
-		alert("Get ready to start trading!!!!!!");
+		alert(
+			"Almost time to start trading!\nThe markets will open 3 seconds after you place the mouse on the 'BUY' button.\nGET READY!!!!",
+		);
 	}, 0);
 
-	let count = 1;
+	let count = 0;
 
 	// GROWING CHART
 
 	function addNextDatapoint() {
-		currentDate = availableDates[count];
-		currentPrice = generateNextPrice(startData, count - 1);
-		document.querySelector("#current-price").innerText = `$${currentPrice} `;
-		startData[count] = currentPrice;
-		chart.updateSeries([
-			{
-				data: startData,
-			},
-		]);
-		if (holdingStock) {
-			updateLiveProfitDisplay();
-		}
-
-		count++;
-		if (count == 60) {
-			clearInterval(graphTimer);
+		if (count != 0) {
+			currentDate = availableDates[count];
+			currentPrice = generateNextPrice(startData, count - 1);
+			document.querySelector("#current-price").innerText = `$${currentPrice} `;
+			startData[count] = currentPrice;
+			chart.updateSeries([
+				{
+					data: startData,
+				},
+			]);
 			if (holdingStock) {
-				handleOrder();
+				updateLiveProfitDisplay();
 			}
 
-			orderButton.remove();
-			document.querySelector("#current-price").remove();
+			count++;
+			if (count == 60) {
+				if (holdingStock) {
+					handleOrder();
+				}
 
-			orderButton.remove();
+				orderButton.remove();
+				document.querySelector("#current-price").remove();
 
-			let finalScores = calculateFinalScores();
+				orderButton.remove();
 
-			submitFinalScores(finalScores);
+				let finalScores = calculateFinalScores();
 
-			setTimeout(function() {
-				alert(`You made a profit of ${finalScores.user_profit}\n
-                The market made a profit of ${finalScores.market_profit}\n
-				Your final score is ${finalScores.score}!`);
-			}, 0);
+				submitFinalScores(finalScores);
 
-			let marketResult = document.createElement("div");
-			marketResult.innerText = `The market made: $${finalScores.market_profit}`;
+				setTimeout(function() {
+					alert(`You made a profit of ${finalScores.user_profit}\n
+					The market made a profit of ${finalScores.market_profit}\n
+					Your final score is ${finalScores.score}!`);
+				}, 0);
 
-			let scoreResult = document.createElement("div");
-			scoreResult.innerText = `Your final score is: ${finalScores.score}`;
+				let marketResult = document.createElement("div");
+				marketResult.innerText = `The market made: $${finalScores.market_profit}`;
 
-			document
-				.querySelector("#profits-container")
-				.append(marketResult, scoreResult);
+				let scoreResult = document.createElement("div");
+				scoreResult.innerText = `Your final score is: ${finalScores.score}`;
+
+				document
+					.querySelector("#profits-container")
+					.append(marketResult, scoreResult);
+			}
+		} else {
+			orderButton.addEventListener("click", handleOrder);
+			currentDate = availableDates[count];
+			currentPrice = 100;
+			document.querySelector("#current-price").innerText = `$${currentPrice} `;
+			startData[count] = currentPrice;
+			count++;
 		}
 	}
 
-	let graphTimer = setInterval(addNextDatapoint, 500); // speed
+	function handleBackCount() {
+		orderButton.removeEventListener("mouseenter", handleBackCount);
+		let counter = 3;
+		let backCount = setInterval(() => {
+			document.querySelector(
+				"#current-price",
+			).innerText = `The markets will open in: ${counter}!`;
+			counter--;
+			if (counter == 0) {
+				clearInterval(backCount);
+				startGraphUpdates();
+			}
+		}, 1000);
+
+		backCount;
+	}
+
+	function startGraphUpdates() {
+		let graphTimer = setInterval(addNextDatapoint, 500); // speed
+		graphTimer;
+		if (count == 60) {
+			clearInterval(graphTimer);
+		}
+	}
 
 	chart.render();
-	graphTimer;
 
 	// HANDLE BUY AND SELL
 
-	orderButton.addEventListener("click", handleOrder);
+	// orderButton.addEventListener("click", handleOrder);
+	orderButton.addEventListener("mouseenter", handleBackCount);
 
 	function handleOrder() {
 		// change to pessimistic rendering?
@@ -477,7 +515,7 @@ function playGame(company) {
 					color: "#2698FF",
 				},
 
-				text: `${orderButton.innerText} @ ${currentPrice}`,
+				text: `${orderButton.innerText} @ $${currentPrice}`,
 			},
 		});
 
