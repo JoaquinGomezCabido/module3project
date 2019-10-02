@@ -1,59 +1,11 @@
-// API and requests
-
-function get(url) {
-	return fetch(url).then(response => response.json());
-}
-
-function post(url, data) {
-	return fetch(url, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Accept: "application/json",
-		},
-		body: JSON.stringify(data),
-	}).then(response => response.json());
-}
-
-function patch(url, data) {
-	return fetch(url, {
-		method: "PATCH",
-		headers: {
-			"Content-Type": "application/json",
-			Accept: "application/json",
-		},
-		body: JSON.stringify(data),
-	}).then(response => response.json());
-}
-
-const API = { get, post, patch };
-
-let practiceUserData = { user: { username: "olib" } };
-let practiceGameData = {
-	game: {
-		user_id: 1,
-		company: "Flatiron",
-		score: 40,
-		user_profit: 140,
-		market_profit: 100,
-	},
-};
-let practiceTradeData = { trade: { order: "buy", price: 90 } };
-let practiceTradeData2 = { trade: { order: "sell", price: 140 } };
-
 // CONSTANTS
-
-const USERS_URL = "http://localhost:3000/users/";
-const GAMES_URL = "http://localhost:3000/games/";
-const TRADES_URL = "http://localhost:3000/trades/";
 
 const home = document.querySelector("#home");
 home.addEventListener("click", showHomeScreen);
 
 const h1 = document.querySelector("h1");
 const tableBody = document.querySelector("tbody");
-const chartContainer = document.querySelector("#chart-container");
-const tradesLogContainer = document.querySelector("#trades-log-container");
+chartContainer = document.querySelector("#chart-container");
 const availableDates = [
 	"January 2020",
 	"February 2020",
@@ -126,7 +78,10 @@ let totalProfit = 0;
 
 function showHomeScreen() {
 	chartContainer.innerText = "";
-	tradesLogContainer.innerText = "";
+	if (!!document.querySelector("#trades-log-container")) {
+		document.querySelector("#trades-log-container").remove();
+		chartContainer.setAttribute("style", "float: center");
+	}
 
 	h1.innerText = "Welcome to the Street of Wall";
 
@@ -176,64 +131,6 @@ function showHomeScreen() {
 		submitButton,
 	);
 	chartContainer.appendChild(newGameForm);
-
-	let h2 = document.createElement("h2");
-	h2.innerText = "Top 10 Scores";
-
-	let leaderboardTable = document.createElement("table");
-	leaderboardTable.id = "leaderboard";
-	leaderboardTable.className = "table table-hover";
-
-	let tableHead = document.createElement("thead");
-	tableHead.className = "thead-light";
-
-	let tableRow = document.createElement("tr");
-
-	let usernameColumn = document.createElement("th");
-	usernameColumn.setAttribute("scope", "col");
-	usernameColumn.innerText = "Username";
-
-	let companyColumn = document.createElement("th");
-	companyColumn.setAttribute("scope", "col");
-	companyColumn.innerText = "Company";
-
-	let scoreColumn = document.createElement("th");
-	scoreColumn.setAttribute("scope", "col");
-	scoreColumn.innerText = "Score";
-
-	tableRow.append(usernameColumn, companyColumn, scoreColumn);
-	tableHead.appendChild(tableRow);
-
-	let tableBody = document.createElement("tbody");
-
-	leaderboardTable.append(tableHead, tableBody);
-	tradesLogContainer.append(h2, leaderboardTable);
-
-	fillUpLeaderboard();
-}
-
-function fillUpLeaderboard() {
-	API.get(USERS_URL).then(response => {
-		let users = response;
-		API.get(GAMES_URL).then(response => {
-			let games = response;
-			let top10games = games.sort((g1, g2) => g2.score - g1.score).slice(0, 10);
-
-			top10games.forEach(game => {
-				let tr = document.createElement("tr");
-				let usernameTd = document.createElement("td");
-
-				let gameUser = users.find(user => user.id === game.user_id);
-				usernameTd.innerText = gameUser.username;
-				let companyTd = document.createElement("td");
-				companyTd.innerText = game.company;
-				let scoreTd = document.createElement("td");
-				scoreTd.innerText = game.score;
-				tr.append(usernameTd, companyTd, scoreTd);
-				document.querySelector("tbody").appendChild(tr);
-			});
-		});
-	});
 }
 
 showHomeScreen();
@@ -242,23 +139,21 @@ function handleFormSubmission() {
 	event.preventDefault();
 	let username = event.target.username.value;
 	let company = event.target.company.value;
-	API.post(USERS_URL, { user: { username } })
-		.then(response => {
-			activeUser = response;
-			API.post(GAMES_URL, { game: { user_id: activeUser.id, company } }).then(
-				response => {
-					activeGame = response;
-				},
-			);
-		})
-		.then(createGame(username, company));
+	createGame(username, company);
 }
 
 function createGame(username, company) {
+	chartContainer.setAttribute("style", "float: left");
 	h1.innerText = `${username} is now trading ${company}!`;
-	document.querySelector("h2").innerText = "Trades Log";
+	tradesLogContainer = document.createElement("div");
+	tradesLogContainer.id = "trades-log-container";
+	document.querySelector("body").appendChild(tradesLogContainer);
+
+	let tradesLogTitle = document.createElement("h2");
+	tradesLogTitle.innerText = "Trades Log";
 	document.querySelector("#start-game").remove();
-	document.querySelector("#leaderboard").remove();
+	tradesLogContainer.appendChild(tradesLogTitle);
+
 	displayBoard();
 	createTradesLog();
 
@@ -430,8 +325,6 @@ function playGame(company) {
 
 				let finalScores = calculateFinalScores();
 
-				submitFinalScores(finalScores);
-
 				setTimeout(function() {
 					alert(`You made a profit of ${finalScores.user_profit}\n
 				The market made a profit of ${finalScores.market_profit}\n
@@ -477,7 +370,7 @@ function playGame(company) {
 	}
 
 	function startGraphUpdates() {
-		graphTimer = setInterval(addNextDatapoint, 1); // speed
+		graphTimer = setInterval(addNextDatapoint, 500); // speed
 		graphTimer;
 	}
 
@@ -497,7 +390,6 @@ function playGame(company) {
 		let price = currentPrice;
 		let game_id = activeGame.id;
 		let tradeData = { trade: { order, price, game_id } };
-		API.post(TRADES_URL, tradeData);
 
 		chart.addPointAnnotation({
 			x: count,
@@ -583,10 +475,6 @@ function playGame(company) {
 		let score = user_profit - market_profit;
 		let finalScores = { user_profit, market_profit, score };
 		return finalScores;
-	};
-
-	submitFinalScores = scores => {
-		API.patch(GAMES_URL + `${activeGame.id}`, { game: scores });
 	};
 }
 
