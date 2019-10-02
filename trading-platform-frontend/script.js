@@ -281,7 +281,7 @@ function displayBoard() {
 
 	controlDiv.append(priceSpan, orderButton);
 
-	chartContainer.append(chartDiv, controlDiv);
+	chartContainer.append(controlDiv, chartDiv);
 }
 
 function createTradesLog() {
@@ -394,11 +394,6 @@ function playGame(company) {
 
 	function addNextDatapoint() {
 		currentDate = availableDates[count];
-		// generateNextChange(startData, count - 1);
-		// Math.random() > 0.5
-		// 	? Math.floor(Math.random() * 10) + 1
-		// 	: -Math.floor(Math.random() * 10);
-		// currentPrice = startData[count - 1] + change;
 		currentPrice = generateNextPrice(startData, count - 1);
 		document.querySelector("#current-price").innerText = `$${currentPrice} `;
 		startData[count] = currentPrice;
