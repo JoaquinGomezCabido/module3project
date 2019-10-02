@@ -128,7 +128,7 @@ function showHomeScreen() {
 	chartContainer.innerText = "";
 	tradesLogContainer.innerText = "";
 
-	h1.innerText = "Welcome to Fence Alley";
+	h1.innerText = "Welcome to the Street of Wall";
 
 	let breakP1 = document.createElement("br");
 	let breakP2 = document.createElement("br");
@@ -452,7 +452,7 @@ function playGame(company) {
 	function handleOrder() {
 		// change to pessimistic rendering?
 		let tradeLi = document.createElement("li");
-		tradeLi.innerText = `${currentDate}: ${orderButton.innerText} @ ${currentPrice}`;
+		tradeLi.innerText = `${currentDate}: ${orderButton.innerText} @ $${currentPrice}`;
 		tradesLog.append(tradeLi);
 
 		let order = orderButton.innerText;
