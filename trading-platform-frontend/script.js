@@ -130,51 +130,60 @@ function showHomeScreen() {
 
 	h1.innerText = "Welcome to Fence Alley";
 
+	let breakP1 = document.createElement("br");
+	let breakP2 = document.createElement("br");
+
 	let newGameForm = document.createElement("form");
 	newGameForm.id = "start-game";
+	newGameForm.className = "card card-body";
 	newGameForm.addEventListener("submit", handleFormSubmission);
 
 	let usernameLabel = document.createElement("label");
 	usernameLabel.setAttribute("for", "username");
-	usernameLabel.innerText = "My name is ";
+	usernameLabel.innerText = "My name is:";
 
 	let usernameInput = document.createElement("input");
 	usernameInput.setAttribute("type", "text");
 	usernameInput.setAttribute("name", "username");
+	usernameInput.className = "form-control";
 	usernameInput.id = "username";
 
 	let companyLabel = document.createElement("label");
 	companyLabel.setAttribute("for", "company");
-	companyLabel.innerText = " and I want to trade on ";
+	companyLabel.innerText = " and I want to trade on:";
 
 	let companyInput = document.createElement("input");
 	companyInput.setAttribute("type", "text");
 	companyInput.setAttribute("name", "company");
+	companyInput.className = "form-control";
 	companyInput.id = "company";
 
 	let submitButton = document.createElement("button");
 	submitButton.setAttribute("type", "submit");
 	submitButton.id = "start-button";
+	submitButton.className = "btn btn-primary";
 	submitButton.innerText = "Start Trading";
 
 	newGameForm.append(
 		usernameLabel,
 		usernameInput,
+		breakP1,
 		companyLabel,
 		companyInput,
+		breakP2,
 		submitButton,
 	);
 	chartContainer.appendChild(newGameForm);
 
 	let h2 = document.createElement("h2");
-	h2.innerText = "Leaderboard";
+	h2.innerText = "Top 10 Scores";
 
 	let leaderboardTable = document.createElement("table");
 	leaderboardTable.id = "leaderboard";
 	leaderboardTable.className = "table table-hover";
 
 	let tableHead = document.createElement("thead");
-	tableHead.className = "table-active";
+	tableHead.className = "thead-light";
 
 	let tableRow = document.createElement("tr");
 
@@ -251,7 +260,7 @@ function createGame(username, company) {
 	displayBoard();
 	createTradesLog();
 
-	playGame(username, company);
+	playGame(company);
 }
 
 function displayBoard() {
@@ -264,6 +273,7 @@ function displayBoard() {
 
 	let orderButton = document.createElement("button");
 	orderButton.id = "order-button";
+	orderButton.className = "btn btn-primary";
 	orderButton.innerText = "BUY";
 
 	chartContainer.append(chartDiv, priceSpan, orderButton);
@@ -272,9 +282,11 @@ function displayBoard() {
 function createTradesLog() {
 	let tradesLogUl = document.createElement("ul");
 	tradesLogUl.id = "trades-log";
+	tradesLogUl.className = "card card-body";
 
 	let profitsContainer = document.createElement("div");
 	profitsContainer.id = "profits-container";
+	profitsContainer.className = "card card-body";
 
 	let liveProfilDisplay = document.createElement("div");
 	liveProfilDisplay.id = "live-profit-display";
@@ -288,7 +300,7 @@ function createTradesLog() {
 	tradesLogContainer.append(tradesLogUl, profitsContainer);
 }
 
-function playGame(username, company) {
+function playGame(company) {
 	// CONSTANTS
 
 	const orderButton = document.querySelector("#order-button");
@@ -298,7 +310,6 @@ function playGame(username, company) {
 	let currentDate = "January 2020";
 	let buyPrice;
 	let sellPrice;
-	let annotations = { points: [] };
 
 	let buyPricesList = [];
 	let sellPricesList = [];
@@ -313,7 +324,7 @@ function playGame(username, company) {
 
 	let options = {
 		chart: {
-			height: 600,
+			height: "75%",
 			type: "line",
 			zoom: {
 				enabled: false,
@@ -362,6 +373,7 @@ function playGame(username, company) {
 		yaxis: {
 			min: 0,
 			max: 200,
+			forceNiceScale: true,
 		},
 		annotations: { points: [] },
 	};
@@ -403,8 +415,6 @@ function playGame(username, company) {
 			orderButton.remove();
 			document.querySelector("#current-price").remove();
 
-			// submitFinalScore(calculateFinalScore());
-
 			orderButton.remove();
 
 			let finalScores = calculateFinalScores();
@@ -416,6 +426,16 @@ function playGame(username, company) {
                 The market made a profit of ${finalScores.market_profit}\n
 				Your final score is ${finalScores.score}!`);
 			}, 0);
+
+			let marketResult = document.createElement("div");
+			marketResult.innerText = `The market made: $${finalScores.market_profit}`;
+
+			let scoreResult = document.createElement("div");
+			scoreResult.innerText = `Your final score is: ${finalScores.score}`;
+
+			document
+				.querySelector("#profits-container")
+				.append(marketResult, scoreResult);
 		}
 	}
 
@@ -481,8 +501,16 @@ function playGame(username, company) {
 	updateLiveProfitDisplay = () => {
 		if (holdingStock) {
 			liveProfitDisplay.innerText = `Live profit: $${currentPrice - buyPrice}`;
+			if (currentPrice - buyPrice < 0) {
+				liveProfitDisplay.setAttribute("style", "color: red");
+			} else if (currentPrice - buyPrice > 0) {
+				liveProfitDisplay.setAttribute("style", "color: green");
+			} else {
+				liveProfitDisplay.setAttribute("style", "color: black");
+			}
 		} else {
 			liveProfitDisplay.innerText = `Live profit: no stock held`;
+			liveProfitDisplay.setAttribute("style", "color: black");
 		}
 	};
 
@@ -498,7 +526,15 @@ function playGame(username, company) {
 	};
 
 	updateTotalProfitDisplay = () => {
-		totalProfitDisplay.innerText = `Total profit: $${updateTotalProfit()}`;
+		let realisedProfit = updateTotalProfit();
+		totalProfitDisplay.innerText = `Total profit: $${realisedProfit}`;
+		if (realisedProfit < 0) {
+			totalProfitDisplay.setAttribute("style", "color: red");
+		} else if (realisedProfit > 0) {
+			totalProfitDisplay.setAttribute("style", "color: green");
+		} else {
+			totalProfitDisplay.setAttribute("style", "color: black");
+		}
 	};
 
 	calculateFinalScores = () => {
