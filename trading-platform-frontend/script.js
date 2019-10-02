@@ -35,7 +35,8 @@ let practiceGameData = {
 		company: "Flatiron",
 		score: 40,
 		user_profit: 140,
-		market_profit: 100,
+        market_profit: 100,
+        history: "100, 50, 150, 200"
 	},
 };
 let practiceTradeData = { trade: { order: "buy", price: 90 } };
@@ -227,7 +228,9 @@ function fillUpLeaderboard() {
 				companyTd.innerText = game.company;
 				let scoreTd = document.createElement("td");
 				scoreTd.innerText = game.score;
-				tr.append(usernameTd, companyTd, scoreTd);
+                tr.append(usernameTd, companyTd, scoreTd);
+                
+                tr.addEventListener("click", () => showGameHistory(game))
 				document.querySelector("tbody").appendChild(tr);
 			});
 		});
@@ -235,6 +238,72 @@ function fillUpLeaderboard() {
 }
 
 showHomeScreen();
+
+function showGameHistory(game) {
+    console.log(game)
+    document.querySelector("#start-game").remove();
+    displayBoard()
+    let company = game.company
+    let chartData = game.history.split(",")
+    let options = {
+		chart: {
+			height: "75%",
+			type: "line",
+			zoom: {
+				enabled: false,
+			},
+			animations: {
+				enabled: true,
+				speed: 100,
+				dynamicAnimation: {
+					enabled: true,
+				},
+			},
+		},
+		series: [
+			{
+                name: company,
+                data: chartData
+			},
+		],
+		dataLabels: {
+			enabled: false,
+		},
+		stroke: {
+			curve: "straight",
+		},
+		title: {
+			text: company,
+			align: "left",
+		},
+		grid: {
+			row: {
+				colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
+				opacity: 0.5,
+			},
+		},
+		xaxis: {
+			categories: availableDates,
+			labels: {
+				rotate: -90,
+				hideOverlappingLabels: true,
+				style: {
+					fontSize: "10px",
+				},
+			},
+			tickAmount: 30,
+		},
+		yaxis: {
+			min: 0,
+			max: 200,
+			forceNiceScale: true,
+		},
+		annotations: { points: [] },
+	};
+
+    let chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render()
+}
 
 function handleFormSubmission() {
 	event.preventDefault();
@@ -576,12 +645,13 @@ function playGame(company) {
 		}
 	};
 
-	calculateFinalScores = () => {
+	calculateFinalScores = historyArr => {
 		let finalPrice = currentPrice;
 		let market_profit = finalPrice - 100;
 		let user_profit = updateTotalProfit();
-		let score = user_profit - market_profit;
-		let finalScores = { user_profit, market_profit, score };
+        let score = user_profit - market_profit;
+        let history = historyArr.toString()
+		let finalScores = { user_profit, market_profit, score, history };
 		return finalScores;
 	};
 

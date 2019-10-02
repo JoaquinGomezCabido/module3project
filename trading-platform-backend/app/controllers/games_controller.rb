@@ -5,13 +5,13 @@ class GamesController < ApplicationController
   end
 
   def create
-    game = Game.create(game_params(:company, :user_id, :score, :user_profit, :market_profit))
+    game = Game.create(game_params(:company, :user_id))
     render json: game
   end
 
   def update
     game = Game.find(params[:id])
-    game.update(game_params(:score, :user_profit, :market_profit))
+    game.update(game_params(:score, :user_profit, :market_profit, :history))
     render json: game
   end
 
