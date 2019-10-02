@@ -146,7 +146,7 @@ function showHomeScreen() {
 	usernameInput.setAttribute("type", "text");
 	usernameInput.setAttribute("name", "username");
 	usernameInput.className = "form-control";
-	usernameInput.setAttribute("required", true);
+	// usernameInput.setAttribute("required", true);
 	usernameInput.id = "username";
 
 	let companyLabel = document.createElement("label");
@@ -157,7 +157,7 @@ function showHomeScreen() {
 	companyInput.setAttribute("type", "text");
 	companyInput.setAttribute("name", "company");
 	companyInput.className = "form-control";
-	companyInput.setAttribute("required", true);
+	// companyInput.setAttribute("required", true);
 	companyInput.id = "company";
 
 	let submitButton = document.createElement("button");
@@ -391,13 +391,16 @@ function playGame(company) {
 	};
 
 	let chart = new ApexCharts(document.querySelector("#chart"), options);
-	setTimeout(function() {
-		alert(
-			"Almost time to start trading!\nThe markets will open 3 seconds after you place the mouse on the 'BUY' button.\nGET READY!!!!",
-		);
-	}, 0);
+	// setTimeout(function() {
+	// 	alert(
+	// 		"Almost time to start trading!\nThe markets will open 3 seconds after you place the mouse on the 'BUY' button.\nGET READY!!!!",
+	// 	);
+	// }, 0);
 
 	count = 0;
+
+	// to be removed
+	startGraphUpdates()
 
 	// GROWING CHART
 
@@ -438,15 +441,48 @@ function playGame(company) {
 				Your final score is ${finalScores.score}!`);
 				}, 0);
 
+				let profitsContainer = document.querySelector("#profits-container")
+
 				let marketResult = document.createElement("div");
 				marketResult.innerText = `The market made: $${finalScores.market_profit}`;
 
 				let scoreResult = document.createElement("div");
+				scoreResult.style.color = (finalScores.score >= 0 ?  "green" : "red")
 				scoreResult.innerText = `Your final score is: ${finalScores.score}`;
 
-				document
-					.querySelector("#profits-container")
-					.append(marketResult, scoreResult);
+				// result gif
+				let resultGifDiv = document.createElement("div");
+				let resultGif = document.createElement("img");
+				let winningGifs = ["https://media.giphy.com/media/wC4P0yFYqjXhK/giphy.gif", "https://media.giphy.com/media/sQBkCTTrJRLSE/giphy.gif", "https://media.giphy.com/media/LdOyjZ7io5Msw/giphy.gif"]
+				let lowProfitWinGif = "https://media.giphy.com/media/PyZEkItObZrnW/giphy.gif"
+				let okGif = "https://media.giphy.com/media/DfdbTJZx6Yjra/giphy.gif"
+				let bigProfitMinusScoreGif = "https://media.giphy.com/media/94EQmVHkveNck/giphy.gif"
+				let lowProfitMinusScoreGif = "https://media.giphy.com/media/qi8Yhj4pKcIec/giphy.gif"
+				let minusProfitPositiveScoreGif = "https://media.giphy.com/media/MRxJqmk3MNta8/giphy.gif"
+				let loseGif = "https://media.giphy.com/media/yIxNOXEMpqkqA/giphy.gif"
+
+				let uProfit = finalScores.user_profit
+				let score = finalScores.score
+
+				if (uProfit > 10 && score >= 0) {
+					resultGif.src = winningGifs[Math.floor(Math.random()*winningGifs.length)]
+				} else if ((uProfit <= 10 && uProfit > 0) && (score > 10)) {
+					resultGif.src = lowProfitWinGif
+				} else if ((uProfit <= 10 && uProfit > 0) && (score < 10 && score >= 0)) {
+					resultGif.src = okGif
+				} else if (uProfit > 10 && score < 0) {
+					resultGif.src = bigProfitMinusScoreGif
+				} else if ((uProfit < 10 && uProfit > 0) && score < 0) {
+					resultGif.src = lowProfitMinusScoreGif
+				} else if (uProfit < 0 && score > 0) {
+					resultGif.src = minusProfitPositiveScoreGif
+				} else {
+					resultGif.src = loseGif
+				}
+				resultGif.style.maxWidth = "100%"
+				resultGifDiv.append(resultGif)
+				
+				profitsContainer.append(marketResult, scoreResult, resultGifDiv);
 				return options;
 			}
 		} else {
@@ -459,25 +495,25 @@ function playGame(company) {
 		}
 	}
 
-	function handleBackCount() {
-		orderButton.removeEventListener("mouseenter", handleBackCount);
-		let counter = 3;
-		let backCount = setInterval(() => {
-			document.querySelector(
-				"#current-price",
-			).innerText = `The markets will open in: ${counter}!`;
-			counter--;
-			if (counter == 0) {
-				clearInterval(backCount);
-				startGraphUpdates();
-			}
-		}, 1000);
+	// function handleBackCount() {
+	// 	orderButton.removeEventListener("mouseenter", handleBackCount);
+	// 	let counter = 3;
+	// 	let backCount = setInterval(() => {
+	// 		document.querySelector(
+	// 			"#current-price",
+	// 		).innerText = `The markets will open in: ${counter}!`;
+	// 		counter--;
+	// 		if (counter == 0) {
+	// 			clearInterval(backCount);
+	// 			startGraphUpdates();
+	// 		}
+	// 	}, 1000);
 
-		backCount;
-	}
+	// 	backCount;
+	// }
 
 	function startGraphUpdates() {
-		graphTimer = setInterval(addNextDatapoint, 500); // speed
+		graphTimer = setInterval(addNextDatapoint, 1); // speed
 		graphTimer;
 	}
 
@@ -485,7 +521,7 @@ function playGame(company) {
 
 	// HANDLE BUY AND SELL
 
-	orderButton.addEventListener("mouseenter", handleBackCount);
+	// orderButton.addEventListener("mouseenter", handleBackCount);
 
 	function handleOrder() {
 		// change to pessimistic rendering?
