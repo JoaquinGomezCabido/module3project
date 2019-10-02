@@ -38,3 +38,7 @@ form {
 #trades-log-container {
     margin: 2% 5%;
 }
+
+#control-div {
+    text-align: center;
+}

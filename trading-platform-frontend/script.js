@@ -267,6 +267,9 @@ function displayBoard() {
 	let chartDiv = document.createElement("div");
 	chartDiv.id = "chart";
 
+	let controlDiv = document.createElement("div");
+	controlDiv.id = "control-div";
+
 	let priceSpan = document.createElement("span");
 	priceSpan.id = "current-price";
 	priceSpan.innerText = 100;
@@ -276,7 +279,9 @@ function displayBoard() {
 	orderButton.className = "btn btn-primary";
 	orderButton.innerText = "BUY";
 
-	chartContainer.append(chartDiv, priceSpan, orderButton);
+	controlDiv.append(priceSpan, orderButton);
+
+	chartContainer.append(chartDiv, controlDiv);
 }
 
 function createTradesLog() {
@@ -389,11 +394,12 @@ function playGame(company) {
 
 	function addNextDatapoint() {
 		currentDate = availableDates[count];
-		let change =
-			Math.random() > 0.5
-				? Math.floor(Math.random() * 10) + 1
-				: -Math.floor(Math.random() * 10);
-		currentPrice = startData[count - 1] + change;
+		// generateNextChange(startData, count - 1);
+		// Math.random() > 0.5
+		// 	? Math.floor(Math.random() * 10) + 1
+		// 	: -Math.floor(Math.random() * 10);
+		// currentPrice = startData[count - 1] + change;
+		currentPrice = generateNextPrice(startData, count - 1);
 		document.querySelector("#current-price").innerText = `$${currentPrice} `;
 		startData[count] = currentPrice;
 		chart.updateSeries([
@@ -549,4 +555,35 @@ function playGame(company) {
 	submitFinalScores = scores => {
 		API.patch(GAMES_URL + `${activeGame.id}`, { game: scores });
 	};
+}
+
+function generateNextPrice(priceArray, position) {
+	let change;
+	let newPrice;
+	if (priceArray[position] == 0) {
+		change = 0;
+	} else {
+		if (priceArray[position] >= 190) {
+			change = -Math.floor(Math.random() * 10);
+		} else if (priceArray[position] <= 10) {
+			if (Math.random() > 0.2) {
+				change = Math.floor(Math.random() * 10) + 1;
+			} else {
+				change = -20;
+			}
+		} else {
+			change =
+				Math.random() > 0.5
+					? Math.floor(Math.random() * 10) + 1
+					: -Math.floor(Math.random() * 10);
+		}
+	}
+
+	if (priceArray[position] + change <= 0) {
+		newPrice = 0;
+	} else {
+		newPrice = priceArray[position] + change;
+	}
+
+	return newPrice;
 }
