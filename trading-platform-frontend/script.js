@@ -146,6 +146,7 @@ function showHomeScreen() {
 	usernameInput.setAttribute("type", "text");
 	usernameInput.setAttribute("name", "username");
 	usernameInput.className = "form-control";
+	usernameInput.setAttribute("required", true);
 	usernameInput.id = "username";
 
 	let companyLabel = document.createElement("label");
@@ -156,6 +157,7 @@ function showHomeScreen() {
 	companyInput.setAttribute("type", "text");
 	companyInput.setAttribute("name", "company");
 	companyInput.className = "form-control";
+	companyInput.setAttribute("required", true);
 	companyInput.id = "company";
 
 	let submitButton = document.createElement("button");
