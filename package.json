@@ -1,0 +1,33 @@
+{
+  "name": "module3project",
+  "version": "1.0.0",
+  "description": "module3project",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoaquinGomezCabido/module3project.git"
+  },
+  "keywords": [
+    "module3project"
+  ],
+  "author": "joaquin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JoaquinGomezCabido/module3project/issues"
+  },
+  "homepage": "https://github.com/JoaquinGomezCabido/module3project#readme",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-browser-sync": "^2.2.0",
+    "grunt-contrib-coffee": "~0.12.0",
+    "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-cssmin": "~0.10.0",
+    "grunt-contrib-sass": "^0.7.4",
+    "grunt-contrib-uglify": "^0.5.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-html-build": "^0.7.1"
+  }
+}
