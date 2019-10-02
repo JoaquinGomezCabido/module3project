@@ -302,7 +302,7 @@ function createTradesLog() {
 	totalProfitDisplay.innerText = "Total Profit: $0";
 
 	profitsContainer.append(liveProfilDisplay, totalProfitDisplay);
-	tradesLogContainer.append(tradesLogUl, profitsContainer);
+	tradesLogContainer.append(profitsContainer, tradesLogUl);
 }
 
 function playGame(company) {
@@ -395,12 +395,12 @@ function playGame(company) {
 		);
 	}, 0);
 
-	let count = 0;
+	count = 0;
 
 	// GROWING CHART
 
 	function addNextDatapoint() {
-		if (count != 0) {
+		if (count != 0 && count <= 60) {
 			currentDate = availableDates[count];
 			currentPrice = generateNextPrice(startData, count - 1);
 			document.querySelector("#current-price").innerText = `$${currentPrice} `;
@@ -419,6 +419,7 @@ function playGame(company) {
 				if (holdingStock) {
 					handleOrder();
 				}
+				clearInterval(graphTimer);
 
 				orderButton.remove();
 				document.querySelector("#current-price").remove();
@@ -431,8 +432,8 @@ function playGame(company) {
 
 				setTimeout(function() {
 					alert(`You made a profit of ${finalScores.user_profit}\n
-					The market made a profit of ${finalScores.market_profit}\n
-					Your final score is ${finalScores.score}!`);
+				The market made a profit of ${finalScores.market_profit}\n
+				Your final score is ${finalScores.score}!`);
 				}, 0);
 
 				let marketResult = document.createElement("div");
@@ -444,6 +445,7 @@ function playGame(company) {
 				document
 					.querySelector("#profits-container")
 					.append(marketResult, scoreResult);
+				return options;
 			}
 		} else {
 			orderButton.addEventListener("click", handleOrder);
@@ -473,18 +475,14 @@ function playGame(company) {
 	}
 
 	function startGraphUpdates() {
-		let graphTimer = setInterval(addNextDatapoint, 500); // speed
+		graphTimer = setInterval(addNextDatapoint, 1); // speed
 		graphTimer;
-		if (count == 60) {
-			clearInterval(graphTimer);
-		}
 	}
 
 	chart.render();
 
 	// HANDLE BUY AND SELL
 
-	// orderButton.addEventListener("click", handleOrder);
 	orderButton.addEventListener("mouseenter", handleBackCount);
 
 	function handleOrder() {
