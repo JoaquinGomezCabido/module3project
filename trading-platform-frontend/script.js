@@ -179,6 +179,7 @@ function showHomeScreen() {
 
 	let h2 = document.createElement("h2");
 	h2.innerText = "Top 10 Scores";
+	h2.addEventListener("click", handleH2Click);
 
 	let leaderboardTable = document.createElement("table");
 	leaderboardTable.id = "leaderboard";
@@ -209,7 +210,7 @@ function showHomeScreen() {
 	leaderboardTable.append(tableHead, tableBody);
 	tradesLogContainer.append(h2, leaderboardTable);
 
-	fillUpLeaderboard();
+	getAndSortGames();
 }
 
 function fillUpLeaderboard() {
@@ -254,9 +255,20 @@ function handleFormSubmission() {
 		.then(createGame(username, company));
 }
 
+function handleH2Click() {
+	if (event.target.innerText == "Top 10 Scores") {
+		document.querySelector("h2").innerText = "Bottom 5 Scores";
+		fillUpLeaderboard(1);
+	} else if (event.target.innerText == "Bottom 5 Scores") {
+		document.querySelector("h2").innerText = "Top 10 Scores";
+		fillUpLeaderboard(0);
+	}
+}
+
 function createGame(username, company) {
 	h1.innerText = `${username} is now trading ${company}!`;
 	document.querySelector("h2").innerText = "Trades Log";
+	document.querySelector("h2").removeEventListener("click", handleH2Click);
 	document.querySelector("#start-game").remove();
 	document.querySelector("#leaderboard").remove();
 	displayBoard();
@@ -426,8 +438,6 @@ function playGame(company) {
 				orderButton.remove();
 				document.querySelector("#current-price").remove();
 
-				orderButton.remove();
-
 				let finalScores = calculateFinalScores();
 
 				submitFinalScores(finalScores);
@@ -438,47 +448,56 @@ function playGame(company) {
 				Your final score is ${finalScores.score}!`);
 				}, 0);
 
-				let profitsContainer = document.querySelector("#profits-container")
+				let profitsContainer = document.querySelector("#profits-container");
 
 				let marketResult = document.createElement("div");
 				marketResult.innerText = `The market made: $${finalScores.market_profit}`;
 
 				let scoreResult = document.createElement("div");
-				scoreResult.style.color = (finalScores.score >= 0 ?  "green" : "red")
+				scoreResult.style.color = finalScores.score >= 0 ? "green" : "red";
 				scoreResult.innerText = `Your final score is: ${finalScores.score}`;
 
 				// result gif
 				let resultGifDiv = document.createElement("div");
 				let resultGif = document.createElement("img");
-				let winningGifs = ["https://media.giphy.com/media/wC4P0yFYqjXhK/giphy.gif", "https://media.giphy.com/media/sQBkCTTrJRLSE/giphy.gif", "https://media.giphy.com/media/LdOyjZ7io5Msw/giphy.gif"]
-				let lowProfitWinGif = "https://media.giphy.com/media/PyZEkItObZrnW/giphy.gif"
-				let okGif = "https://media.giphy.com/media/DfdbTJZx6Yjra/giphy.gif"
-				let bigProfitMinusScoreGif = "https://media.giphy.com/media/94EQmVHkveNck/giphy.gif"
-				let lowProfitMinusScoreGif = "https://media.giphy.com/media/qi8Yhj4pKcIec/giphy.gif"
-				let minusProfitPositiveScoreGif = "https://media.giphy.com/media/MRxJqmk3MNta8/giphy.gif"
-				let loseGif = "https://media.giphy.com/media/yIxNOXEMpqkqA/giphy.gif"
+				let winningGifs = [
+					"https://media.giphy.com/media/wC4P0yFYqjXhK/giphy.gif",
+					"https://media.giphy.com/media/sQBkCTTrJRLSE/giphy.gif",
+					"https://media.giphy.com/media/LdOyjZ7io5Msw/giphy.gif",
+				];
+				let lowProfitWinGif =
+					"https://media.giphy.com/media/PyZEkItObZrnW/giphy.gif";
+				let okGif = "https://media.giphy.com/media/DfdbTJZx6Yjra/giphy.gif";
+				let bigProfitMinusScoreGif =
+					"https://media.giphy.com/media/94EQmVHkveNck/giphy.gif";
+				let lowProfitMinusScoreGif =
+					"https://media.giphy.com/media/qi8Yhj4pKcIec/giphy.gif";
+				let minusProfitPositiveScoreGif =
+					"https://media.giphy.com/media/MRxJqmk3MNta8/giphy.gif";
+				let loseGif = "https://media.giphy.com/media/yIxNOXEMpqkqA/giphy.gif";
 
-				let uProfit = finalScores.user_profit
-				let score = finalScores.score
+				let uProfit = finalScores.user_profit;
+				let score = finalScores.score;
 
 				if (uProfit > 10 && score >= 0) {
-					resultGif.src = winningGifs[Math.floor(Math.random()*winningGifs.length)]
-				} else if ((uProfit <= 10 && uProfit > 0) && (score > 10)) {
-					resultGif.src = lowProfitWinGif
-				} else if ((uProfit <= 10 && uProfit > 0) && (score < 10 && score >= 0)) {
-					resultGif.src = okGif
+					resultGif.src =
+						winningGifs[Math.floor(Math.random() * winningGifs.length)];
+				} else if (uProfit <= 10 && uProfit > 0 && score > 10) {
+					resultGif.src = lowProfitWinGif;
+				} else if (uProfit <= 10 && uProfit > 0 && (score < 10 && score >= 0)) {
+					resultGif.src = okGif;
 				} else if (uProfit > 15 && score < 0) {
-					resultGif.src = bigProfitMinusScoreGif
-				} else if ((uProfit < 15 && uProfit > 0) && score < 0) {
-					resultGif.src = lowProfitMinusScoreGif
+					resultGif.src = bigProfitMinusScoreGif;
+				} else if (uProfit < 15 && uProfit > 0 && score < 0) {
+					resultGif.src = lowProfitMinusScoreGif;
 				} else if (uProfit < 0 && score > 0) {
-					resultGif.src = minusProfitPositiveScoreGif
+					resultGif.src = minusProfitPositiveScoreGif;
 				} else {
-					resultGif.src = loseGif
+					resultGif.src = loseGif;
 				}
-				resultGif.style.maxWidth = "100%"
-				resultGifDiv.append(resultGif)
-				
+				resultGif.style.maxWidth = "100%";
+				resultGifDiv.append(resultGif);
+
 				profitsContainer.append(marketResult, scoreResult, resultGifDiv);
 				return options;
 			}
@@ -520,34 +539,40 @@ function playGame(company) {
 
 	orderButton.addEventListener("mouseenter", handleBackCount);
 
-	let orderNo = 1
+	let orderNo = 1;
 
 	function handleOrder() {
 		let tradeLi = document.createElement("li");
-		tradeLi.id = `trade-${orderNo}`
-		tradeLi.setAttribute("price", currentPrice)
+		tradeLi.id = `trade-${orderNo}`;
+		tradeLi.setAttribute("price", currentPrice);
 		tradeLi.innerText = `${currentDate}: ${orderButton.innerText} @ $${currentPrice}`;
 		tradesLog.append(tradeLi);
-		if (!holdingStock) { // buy
-			tradeLi.style.color = "gray"
-		} else { // sell
-			let associatedBuyLi = document.querySelector(`li#trade-${orderNo - 1}`)
-			if (currentPrice > parseInt(associatedBuyLi.attributes.price.value)) { // positive buy/sell pair
-				tradeLi.style.color = "green"
-				associatedBuyLi.style.color = "green"
-			} else if (currentPrice === parseInt(associatedBuyLi.attributes.price.value)) { // break even
-				tradeLi.style.color = "gray"
-				associatedBuyLi.style.color = "gray"
+		if (!holdingStock) {
+			// buy
+			tradeLi.style.color = "gray";
+		} else {
+			// sell
+			let associatedBuyLi = document.querySelector(`li#trade-${orderNo - 1}`);
+			if (currentPrice > parseInt(associatedBuyLi.attributes.price.value)) {
+				// positive buy/sell pair
+				tradeLi.style.color = "green";
+				associatedBuyLi.style.color = "green";
+			} else if (
+				currentPrice === parseInt(associatedBuyLi.attributes.price.value)
+			) {
+				// break even
+				tradeLi.style.color = "gray";
+				associatedBuyLi.style.color = "gray";
 			} else {
-				tradeLi.style.color = "red"
-				associatedBuyLi.style.color = "red"
+				tradeLi.style.color = "red";
+				associatedBuyLi.style.color = "red";
 			}
-			let separatorLi = document.createElement("li")
-			separatorLi.innerText = "-"
-			tradesLog.append(separatorLi)
+			let separatorLi = document.createElement("li");
+			separatorLi.innerText = "-";
+			tradesLog.append(separatorLi);
 		}
 
-		orderNo++
+		orderNo++;
 
 		let order = orderButton.innerText;
 		let price = currentPrice;
