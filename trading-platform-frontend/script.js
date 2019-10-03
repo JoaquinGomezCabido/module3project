@@ -230,7 +230,7 @@ function getAndSortGames() {
 					.slice(0, 5);
 				top10bottom5 = [top10games, bottom5games];
 			})
-			.then(a => fillUpLeaderboard(1));
+			.then(a => fillUpLeaderboard(0));
 	});
 }
 
