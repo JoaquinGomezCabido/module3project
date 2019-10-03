@@ -302,6 +302,17 @@ function displayBoard() {
 	priceSpan.id = "current-price";
 	priceSpan.innerText = 100;
 
+	let backgroundSound = document.createElement("audio");
+	backgroundSound.id = "backgroundSound";
+	backgroundSound.src = "sound.wav";
+	let cash = document.createElement("audio");
+	cash.id = "cash";
+	cash.src = "cash.wav";
+	let slap = document.createElement("audio");
+	slap.id = "slap";
+	slap.src = "slap.wav";
+	document.querySelector("body").append(backgroundSound, cash, slap);
+
 	let orderButton = document.createElement("button");
 	orderButton.id = "order-button";
 	orderButton.className = "btn btn-primary";
@@ -449,6 +460,8 @@ function playGame(company) {
 				}
 				clearInterval(graphTimer);
 
+				document.querySelector("#backgroundSound").remove();
+
 				orderButton.remove();
 				document.querySelector("#current-price").remove();
 
@@ -527,6 +540,7 @@ function playGame(company) {
 
 	function handleBackCount() {
 		orderButton.removeEventListener("mouseenter", handleBackCount);
+		document.querySelector("#backgroundSound").play();
 		let counter = 3;
 		let backCount = setInterval(() => {
 			document.querySelector(
@@ -571,6 +585,7 @@ function playGame(company) {
 				// positive buy/sell pair
 				tradeLi.style.color = "green";
 				associatedBuyLi.style.color = "green";
+				document.querySelector("#cash").play();
 			} else if (
 				currentPrice === parseInt(associatedBuyLi.attributes.price.value)
 			) {
@@ -580,6 +595,7 @@ function playGame(company) {
 			} else {
 				tradeLi.style.color = "red";
 				associatedBuyLi.style.color = "red";
+				document.querySelector("#slap").play();
 			}
 			let separatorLi = document.createElement("li");
 			separatorLi.innerText = "-";
