@@ -277,11 +277,12 @@ function handleFormSubmission() {
 	API.post(USERS_URL, { user: { username } })
 		.then(response => {
 			activeUser = response;
-			API.post(GAMES_URL, { game: { user_id: activeUser.id, company } }).then(
-				response => {
-					activeGame = response;
-				},
-			);
+			if (company.toLowerCase() !== "wework") 
+				{API.post(GAMES_URL, { game: { user_id: activeUser.id, company } }).then(
+					response => {
+						activeGame = response;
+					},
+				);}
 		})
 		.then(createGame(username, company));
 }
