@@ -470,9 +470,9 @@ function playGame(company) {
 					resultGif.src = lowProfitWinGif
 				} else if ((uProfit <= 10 && uProfit > 0) && (score < 10 && score >= 0)) {
 					resultGif.src = okGif
-				} else if (uProfit > 10 && score < 0) {
+				} else if (uProfit > 15 && score < 0) {
 					resultGif.src = bigProfitMinusScoreGif
-				} else if ((uProfit < 10 && uProfit > 0) && score < 0) {
+				} else if ((uProfit < 15 && uProfit > 0) && score < 0) {
 					resultGif.src = lowProfitMinusScoreGif
 				} else if (uProfit < 0 && score > 0) {
 					resultGif.src = minusProfitPositiveScoreGif
@@ -513,7 +513,7 @@ function playGame(company) {
 	// }
 
 	function startGraphUpdates() {
-		graphTimer = setInterval(addNextDatapoint, 1); // speed
+		graphTimer = setInterval(addNextDatapoint, 500); // speed
 		graphTimer;
 	}
 
@@ -523,11 +523,36 @@ function playGame(company) {
 
 	// orderButton.addEventListener("mouseenter", handleBackCount);
 
+	let orderNo = 1
+
 	function handleOrder() {
 		// change to pessimistic rendering?
 		let tradeLi = document.createElement("li");
+		tradeLi.id = `trade-${orderNo}`
+		// tradeLi.setAttribute("orderNo", orderNo)
+		tradeLi.setAttribute("price", currentPrice)
 		tradeLi.innerText = `${currentDate}: ${orderButton.innerText} @ $${currentPrice}`;
 		tradesLog.append(tradeLi);
+		if (!holdingStock) { // buy
+			tradeLi.style.color = "gray"
+		} else { // sell
+			let associatedBuyLi = document.querySelector(`li#trade-${orderNo - 1}`)
+			if (currentPrice > parseInt(associatedBuyLi.attributes.price.value)) { // positive buy/sell pair
+				tradeLi.style.color = "green"
+				associatedBuyLi.style.color = "green"
+			} else if (currentPrice === parseInt(associatedBuyLi.attributes.price.value)) { // break even
+				tradeLi.style.color = "gray"
+				associatedBuyLi.style.color = "gray"
+			} else {
+				tradeLi.style.color = "red"
+				associatedBuyLi.style.color = "red"
+			}
+			let separatorLi = document.createElement("li")
+			separatorLi.innerText = "-"
+			tradesLog.append(separatorLi)
+		}
+
+		orderNo++
 
 		let order = orderButton.innerText;
 		let price = currentPrice;
