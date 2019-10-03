@@ -125,6 +125,21 @@ let top10bottom5 = [];
 
 let totalProfit = 0;
 
+// predetermined datasets
+
+const weworkData = [100]
+
+for (let index = 1; index < 20; index++) {
+	weworkData[index] = weworkData[index - 1] + (Math.floor(Math.random() * 9)) - 3
+}
+for (let index = 20; index < 30; index++) {
+	weworkData[index] = weworkData[index - 1] - (Math.floor(Math.random() * 9)) + 4
+}
+for (let index = 30; index < 60; index++) {
+	weworkData[index] = weworkData[index - 1] + (Math.floor(Math.random() * 4)) - 7
+	if (weworkData[index] < 0) {weworkData[index] = 0}
+}
+
 // CREATE NEW GAME
 
 function showHomeScreen() {
@@ -413,7 +428,11 @@ function playGame(company) {
 	function addNextDatapoint() {
 		if (count != 0 && count <= 60) {
 			currentDate = availableDates[count];
-			currentPrice = generateNextPrice(startData, count - 1);
+			if (company.toLowerCase() === "wework") {
+				currentPrice = nextPredeterminedPrice(count)
+			} else {
+				currentPrice = generateNextPrice(startData, count - 1);
+			}
 			document.querySelector("#current-price").innerText = `$${currentPrice} `;
 			startData[count] = currentPrice;
 			chart.updateSeries([
@@ -684,4 +703,9 @@ function generateNextPrice(priceArray, position) {
 	}
 
 	return newPrice;
+}
+
+function nextPredeterminedPrice(index) {
+	let newPrice = weworkData[index]
+	return newPrice
 }
