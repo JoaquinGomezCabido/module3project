@@ -120,6 +120,9 @@ const availableDates = [
 let activeUser = {};
 let activeGame = {};
 
+let leaderboardUsers = [];
+let top10bottom5 = [];
+
 let totalProfit = 0;
 
 // CREATE NEW GAME
@@ -213,27 +216,38 @@ function showHomeScreen() {
 	getAndSortGames();
 }
 
-function fillUpLeaderboard() {
+function getAndSortGames() {
 	API.get(USERS_URL).then(response => {
-		let users = response;
-		API.get(GAMES_URL).then(response => {
-			let games = response;
-			let top10games = games.sort((g1, g2) => g2.score - g1.score).slice(0, 10);
+		leaderboardUsers = response;
+		API.get(GAMES_URL)
+			.then(response => {
+				let games = response;
+				let top10games = games
+					.sort((g1, g2) => g2.score - g1.score)
+					.slice(0, 10);
+				let bottom5games = games
+					.sort((g1, g2) => g1.score - g2.score)
+					.slice(0, 5);
+				top10bottom5 = [top10games, bottom5games];
+			})
+			.then(a => fillUpLeaderboard(1));
+	});
+}
 
-			top10games.forEach(game => {
-				let tr = document.createElement("tr");
-				let usernameTd = document.createElement("td");
+function fillUpLeaderboard(index) {
+	document.querySelector("tbody").innerText = "";
+	top10bottom5[index].forEach(game => {
+		let tr = document.createElement("tr");
+		let usernameTd = document.createElement("td");
 
-				let gameUser = users.find(user => user.id === game.user_id);
-				usernameTd.innerText = gameUser.username;
-				let companyTd = document.createElement("td");
-				companyTd.innerText = game.company;
-				let scoreTd = document.createElement("td");
-				scoreTd.innerText = game.score;
-				tr.append(usernameTd, companyTd, scoreTd);
-				document.querySelector("tbody").appendChild(tr);
-			});
-		});
+		let gameUser = leaderboardUsers.find(user => user.id === game.user_id);
+		usernameTd.innerText = gameUser.username;
+		let companyTd = document.createElement("td");
+		companyTd.innerText = game.company;
+		let scoreTd = document.createElement("td");
+		scoreTd.innerText = game.score;
+		tr.append(usernameTd, companyTd, scoreTd);
+		document.querySelector("tbody").appendChild(tr);
 	});
 }
 

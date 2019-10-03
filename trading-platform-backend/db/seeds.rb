@@ -13,10 +13,10 @@ User.destroy_all
 geo = User.create(username: "geo")
 paco = User.create(username: "paco")
 
-apple_game = Game.create(user: geo, company: "Apple", score: 1000)
-uber_game = Game.create(user: geo, company: "Uber", score: 2500)
-tesla_game = Game.create(user: paco, company: "Tesla", score: 5000)
-wework_game = Game.create(user: paco, company: "WeWork", score: -10000)
+apple_game = Game.create(user: geo, company: "Apple", score: 10)
+uber_game = Game.create(user: geo, company: "Uber", score: 25)
+tesla_game = Game.create(user: paco, company: "Tesla", score: 15)
+wework_game = Game.create(user: paco, company: "WeWork", score: -40)
 
 Trade.create(game: apple_game, order: "buy", price: 100, date: "01/01/2014")
 Trade.create(game: apple_game, order: "sell", price: 500, date: "01/10/2017")
