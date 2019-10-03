@@ -300,7 +300,7 @@ function displayBoard() {
 
 	let priceSpan = document.createElement("span");
 	priceSpan.id = "current-price";
-	priceSpan.innerText = 100;
+	// priceSpan.innerText = "";
 
 	let orderButton = document.createElement("button");
 	orderButton.id = "order-button";
