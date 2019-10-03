@@ -127,17 +127,19 @@ let totalProfit = 0;
 
 // predetermined datasets
 
-const weworkData = [100]
+const weworkData = [100];
 
 for (let index = 1; index < 20; index++) {
-	weworkData[index] = weworkData[index - 1] + (Math.floor(Math.random() * 9)) - 3
+	weworkData[index] = weworkData[index - 1] + Math.floor(Math.random() * 9) - 3;
 }
 for (let index = 20; index < 30; index++) {
-	weworkData[index] = weworkData[index - 1] - (Math.floor(Math.random() * 9)) + 4
+	weworkData[index] = weworkData[index - 1] - Math.floor(Math.random() * 9) + 4;
 }
 for (let index = 30; index < 60; index++) {
-	weworkData[index] = weworkData[index - 1] + (Math.floor(Math.random() * 4)) - 7
-	if (weworkData[index] < 0) {weworkData[index] = 0}
+	weworkData[index] = weworkData[index - 1] + Math.floor(Math.random() * 4) - 7;
+	if (weworkData[index] < 0) {
+		weworkData[index] = 0;
+	}
 }
 
 // CREATE NEW GAME
@@ -457,7 +459,7 @@ function playGame(company) {
 		if (count != 0 && count <= 60) {
 			currentDate = availableDates[count];
 			if (company.toLowerCase() === "wework") {
-				currentPrice = nextPredeterminedPrice(count)
+				currentPrice = nextPredeterminedPrice(count);
 			} else {
 				currentPrice = generateNextPrice(startData, count - 1);
 			}
@@ -752,6 +754,6 @@ function generateNextPrice(priceArray, position) {
 }
 
 function nextPredeterminedPrice(index) {
-	let newPrice = weworkData[index]
-	return newPrice
+	let newPrice = weworkData[index];
+	return newPrice;
 }
