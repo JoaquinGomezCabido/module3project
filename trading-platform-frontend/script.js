@@ -146,7 +146,7 @@ function showHomeScreen() {
 	usernameInput.setAttribute("type", "text");
 	usernameInput.setAttribute("name", "username");
 	usernameInput.className = "form-control";
-	// usernameInput.setAttribute("required", true);
+	usernameInput.setAttribute("required", true);
 	usernameInput.id = "username";
 
 	let companyLabel = document.createElement("label");
@@ -157,7 +157,7 @@ function showHomeScreen() {
 	companyInput.setAttribute("type", "text");
 	companyInput.setAttribute("name", "company");
 	companyInput.className = "form-control";
-	// companyInput.setAttribute("required", true);
+	companyInput.setAttribute("required", true);
 	companyInput.id = "company";
 
 	let submitButton = document.createElement("button");
@@ -391,16 +391,13 @@ function playGame(company) {
 	};
 
 	let chart = new ApexCharts(document.querySelector("#chart"), options);
-	// setTimeout(function() {
-	// 	alert(
-	// 		"Almost time to start trading!\nThe markets will open 3 seconds after you place the mouse on the 'BUY' button.\nGET READY!!!!",
-	// 	);
-	// }, 0);
+	setTimeout(function() {
+		alert(
+			"Almost time to start trading!\nThe markets will open 3 seconds after you place the mouse on the 'BUY' button.\nGET READY!!!!",
+		);
+	}, 0);
 
 	count = 0;
-
-	// to be removed
-	startGraphUpdates()
 
 	// GROWING CHART
 
@@ -495,22 +492,22 @@ function playGame(company) {
 		}
 	}
 
-	// function handleBackCount() {
-	// 	orderButton.removeEventListener("mouseenter", handleBackCount);
-	// 	let counter = 3;
-	// 	let backCount = setInterval(() => {
-	// 		document.querySelector(
-	// 			"#current-price",
-	// 		).innerText = `The markets will open in: ${counter}!`;
-	// 		counter--;
-	// 		if (counter == 0) {
-	// 			clearInterval(backCount);
-	// 			startGraphUpdates();
-	// 		}
-	// 	}, 1000);
+	function handleBackCount() {
+		orderButton.removeEventListener("mouseenter", handleBackCount);
+		let counter = 3;
+		let backCount = setInterval(() => {
+			document.querySelector(
+				"#current-price",
+			).innerText = `The markets will open in: ${counter}!`;
+			counter--;
+			if (counter == 0) {
+				clearInterval(backCount);
+				startGraphUpdates();
+			}
+		}, 1000);
 
-	// 	backCount;
-	// }
+		backCount;
+	}
 
 	function startGraphUpdates() {
 		graphTimer = setInterval(addNextDatapoint, 500); // speed
@@ -521,15 +518,13 @@ function playGame(company) {
 
 	// HANDLE BUY AND SELL
 
-	// orderButton.addEventListener("mouseenter", handleBackCount);
+	orderButton.addEventListener("mouseenter", handleBackCount);
 
 	let orderNo = 1
 
 	function handleOrder() {
-		// change to pessimistic rendering?
 		let tradeLi = document.createElement("li");
 		tradeLi.id = `trade-${orderNo}`
-		// tradeLi.setAttribute("orderNo", orderNo)
 		tradeLi.setAttribute("price", currentPrice)
 		tradeLi.innerText = `${currentDate}: ${orderButton.innerText} @ $${currentPrice}`;
 		tradesLog.append(tradeLi);
